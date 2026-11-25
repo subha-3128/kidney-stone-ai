@@ -131,6 +131,8 @@ const History = () => {
       isStone: scan.prediction === 'Stone'
     }))
 
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+
   return (
     <div className="space-y-6">
       {/* Top Header Card */}
@@ -138,14 +140,14 @@ const History = () => {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="badge-primary">Audit Registry</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
+            <span className="text-xs text-theme-muted">
               Local Browser Session
             </span>
           </div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h2 className="text-xl font-bold tracking-tight text-theme-text">
             Diagnostic Scan History
           </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+          <p className="text-sm text-theme-muted mt-0.5">
             Audit trail of processed renal scans, ensemble soft-vote confidence, and clinical classification reports.
           </p>
         </div>
@@ -156,13 +158,13 @@ const History = () => {
               onClick={seedSampleHistory}
               className="btn-secondary text-xs flex items-center gap-1.5"
             >
-              <Sparkles size={14} className="text-blue-500" />
+              <Sparkles size={14} className="text-forest dark:text-darkEmerald-primary" />
               <span>Load Sample History</span>
             </button>
           ) : (
             <button
               onClick={clearAllHistory}
-              className="btn-secondary text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-1.5"
+              className="btn-secondary text-xs text-terracotta dark:text-darkEmerald-accent hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30 flex items-center gap-1.5"
             >
               <Trash2 size={14} />
               <span>Clear History</span>
@@ -181,49 +183,49 @@ const History = () => {
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="card p-4">
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+              <span className="text-xs font-semibold text-theme-muted uppercase tracking-wider block">
                 Total Scans
               </span>
-              <div className="text-2xl font-bold mt-1 text-slate-900 dark:text-white">
+              <div className="text-2xl font-bold mt-1 text-theme-text">
                 {totalScans}
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-theme-muted mt-0.5">
                 Processed in this browser
               </p>
             </div>
 
-            <div className="card p-4 border-rose-200/70 dark:border-rose-900/40">
-              <span className="text-xs font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider block">
+            <div className="card p-4 border-terracotta-200 dark:border-terracotta-700/50">
+              <span className="text-xs font-semibold text-terracotta-600 dark:text-darkEmerald-accent uppercase tracking-wider block">
                 Stones Detected
               </span>
-              <div className="text-2xl font-bold mt-1 text-rose-600 dark:text-rose-400">
+              <div className="text-2xl font-bold mt-1 text-terracotta-600 dark:text-darkEmerald-accent">
                 {stoneScans}
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-theme-muted mt-0.5">
                 {totalScans > 0 ? ((stoneScans / totalScans) * 100).toFixed(0) : 0}% positive rate
               </p>
             </div>
 
-            <div className="card p-4 border-emerald-200/70 dark:border-emerald-900/40">
-              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
+            <div className="card p-4 border-forest-200 dark:border-forest-700/50">
+              <span className="text-xs font-semibold text-forest dark:text-darkEmerald-primary uppercase tracking-wider block">
                 Unremarkable
               </span>
-              <div className="text-2xl font-bold mt-1 text-emerald-600 dark:text-emerald-400">
+              <div className="text-2xl font-bold mt-1 text-forest dark:text-darkEmerald-primary">
                 {normalScans}
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-theme-muted mt-0.5">
                 {totalScans > 0 ? ((normalScans / totalScans) * 100).toFixed(0) : 0}% negative rate
               </p>
             </div>
 
-            <div className="card p-4 border-blue-200/70 dark:border-blue-900/40">
-              <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
+            <div className="card p-4 border-sage-200 dark:border-sage-700/50">
+              <span className="text-xs font-semibold text-sage-600 dark:text-sage-400 uppercase tracking-wider block">
                 Mean Confidence
               </span>
-              <div className="text-2xl font-bold mt-1 text-slate-900 dark:text-white">
+              <div className="text-2xl font-bold mt-1 text-theme-text">
                 {avgConfidence}%
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-[11px] text-theme-muted mt-0.5">
                 Across both classes
               </p>
             </div>
@@ -232,41 +234,41 @@ const History = () => {
           {/* Confidence Trend Chart */}
           {chartData.length > 1 && (
             <div className="card">
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-200/90 dark:border-white/[0.08]">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-theme-border">
                 <div className="flex items-center gap-2">
-                  <TrendingUp size={16} className="text-blue-500" />
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+                  <TrendingUp size={16} className="text-forest dark:text-darkEmerald-primary" />
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-theme-text">
                     Recent Scan Confidence Trajectory
                   </h3>
                 </div>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
+                <span className="text-xs text-theme-muted">
                   Last {chartData.length} records
                 </span>
               </div>
               <div className="h-48 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
-                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
-                    <YAxis domain={[50, 100]} stroke="#64748b" fontSize={11} />
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} stroke="currentColor" />
+                    <XAxis dataKey="name" stroke="#758078" fontSize={11} />
+                    <YAxis domain={[50, 100]} stroke="#758078" fontSize={11} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0c0e14',
-                        borderColor: '#232838',
+                        backgroundColor: 'var(--bg-card)',
+                        borderColor: 'var(--border-color)',
                         borderRadius: '10px',
-                        color: '#f8fafc',
+                        color: 'var(--text-main)',
                         fontSize: '12px',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
+                        boxShadow: '0 8px 24px rgba(32,41,35,0.1)'
                       }}
                       formatter={(val) => [`${val}%`, 'Ensemble Confidence']}
                     />
                     <Line
                       type="monotone"
                       dataKey="confidence"
-                      stroke="#3b82f6"
+                      stroke="var(--primary)"
                       strokeWidth={2.5}
-                      dot={{ r: 4, fill: '#3b82f6', stroke: '#1d4ed8' }}
-                      activeDot={{ r: 6, fill: '#60a5fa' }}
+                      dot={{ r: 4, fill: 'var(--primary)', stroke: 'var(--bg-card)', strokeWidth: 2 }}
+                      activeDot={{ r: 6, fill: 'var(--primary)' }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -278,19 +280,19 @@ const History = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             {/* Search Input */}
             <div className="relative w-full sm:w-80">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-theme-muted" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by file name or Report ID..."
-                className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/[0.1] bg-surface dark:bg-surface-elevatedDark text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 transition-all shadow-subtle placeholder:text-slate-400"
+                className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-theme-border bg-theme-card text-theme-text focus:outline-none focus:ring-2 focus:ring-forest/20 dark:focus:ring-darkEmerald-primary/20 focus:border-forest dark:focus:border-darkEmerald-primary transition-all shadow-subtle placeholder:text-theme-muted"
               />
             </div>
 
             {/* Filter Tabs */}
             <div className="flex items-center gap-1.5 self-start sm:self-auto text-xs">
-              <span className="text-slate-500 text-[11px] mr-1 hidden sm:inline">Filter:</span>
+              <span className="text-theme-muted text-[11px] mr-1 hidden sm:inline">Filter:</span>
               {[
                 { id: 'all', label: `All (${totalScans})` },
                 { id: 'Stone', label: `Stones (${stoneScans})` },
@@ -301,8 +303,8 @@ const History = () => {
                   onClick={() => setFilterType(tab.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     filterType === tab.id
-                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-sm shadow-blue-500/20'
-                      : 'bg-surface dark:bg-surface-elevatedDark text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.04]'
+                      ? 'bg-forest text-white dark:bg-darkEmerald-primary dark:text-charcoal-900 font-semibold shadow-sm'
+                      : 'bg-theme-card text-theme-muted border border-theme-border hover:bg-theme-elevated hover:text-theme-text'
                   }`}
                 >
                   {tab.label}
@@ -318,12 +320,12 @@ const History = () => {
               return (
                 <div
                   key={scan.id}
-                  className="card p-4 flex flex-col justify-between hover:border-slate-300 dark:hover:border-white/[0.16] transition-all group shadow-subtle hover:shadow-premium"
+                  className="card p-4 flex flex-col justify-between hover:border-forest/40 dark:hover:border-darkEmerald-primary/40 transition-all group shadow-subtle hover:shadow-premium"
                 >
                   <div className="space-y-3">
                     {/* Header Row */}
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-mono text-[11px] text-slate-400">
+                      <span className="font-mono text-[11px] text-theme-muted">
                         {scan.id}
                       </span>
                       <span className={isStone ? 'badge-danger text-[10px]' : 'badge-success text-[10px]'}>
@@ -334,14 +336,14 @@ const History = () => {
                     {/* Image Preview Thumbnail */}
                     <div 
                       onClick={() => setSelectedScan(scan)}
-                      className="relative h-36 bg-[#060709] rounded-xl overflow-hidden border border-slate-850 dark:border-white/[0.08] flex items-center justify-center cursor-pointer group-hover:border-blue-500/50 transition-colors"
+                      className="relative h-36 bg-[#0A0E0C] rounded-xl overflow-hidden border border-theme-border flex items-center justify-center cursor-pointer group-hover:border-forest/50 dark:group-hover:border-darkEmerald-primary/50 transition-colors"
                     >
                       <img
                         src={scan.previewUrl}
                         alt={scan.imageName}
                         className="max-h-full max-w-full object-contain"
                       />
-                      <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs gap-1">
+                      <div className="absolute inset-0 bg-charcoal/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs gap-1 backdrop-blur-[2px]">
                         <Eye size={14} />
                         <span>Inspect Scan</span>
                       </div>
@@ -349,10 +351,10 @@ const History = () => {
 
                     {/* Meta info */}
                     <div>
-                      <p className="font-semibold text-xs text-slate-900 dark:text-white truncate" title={scan.imageName}>
+                      <p className="font-semibold text-xs text-theme-text truncate" title={scan.imageName}>
                         {scan.imageName}
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-[11px] text-theme-muted mt-0.5">
                         {new Date(scan.timestamp).toLocaleDateString()} at {new Date(scan.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
@@ -360,14 +362,14 @@ const History = () => {
                     {/* Confidence Meter Bar */}
                     <div>
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-[11px] text-slate-500">Confidence</span>
-                        <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">
+                        <span className="text-[11px] text-theme-muted">Confidence</span>
+                        <span className="font-mono font-bold text-xs text-theme-text">
                           {scan.confidence}%
                         </span>
                       </div>
-                      <div className="w-full bg-slate-100 dark:bg-white/[0.08] h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-ivory-200 dark:bg-darkEmerald-border h-1.5 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${isStone ? 'bg-danger' : 'bg-success'}`}
+                          className={`h-full ${isStone ? 'bg-terracotta dark:bg-darkEmerald-accent' : 'bg-forest dark:bg-darkEmerald-primary'}`}
                           style={{ width: `${scan.confidence}%` }}
                         />
                       </div>
@@ -375,10 +377,10 @@ const History = () => {
                   </div>
 
                   {/* Actions Row */}
-                  <div className="pt-3 mt-3 border-t border-slate-200/90 dark:border-white/[0.08] flex items-center justify-between">
+                  <div className="pt-3 mt-3 border-t border-theme-border flex items-center justify-between">
                     <button
                       onClick={() => setSelectedScan(scan)}
-                      className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                      className="text-xs text-forest dark:text-darkEmerald-primary hover:underline flex items-center gap-1 cursor-pointer font-medium"
                     >
                       <Eye size={13} />
                       <span>Details</span>
@@ -386,7 +388,7 @@ const History = () => {
 
                     <button
                       onClick={() => deleteScan(scan.id)}
-                      className="p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
+                      className="p-1 rounded-lg text-theme-muted hover:text-terracotta hover:bg-theme-elevated transition-colors cursor-pointer"
                       title="Delete record"
                     >
                       <Trash2 size={14} />
@@ -398,7 +400,7 @@ const History = () => {
           </div>
 
           {filteredHistory.length === 0 && (
-            <div className="card py-12 text-center text-xs text-slate-500">
+            <div className="card py-12 text-center text-xs text-theme-muted">
               No matching scans found for query "{searchQuery}".
             </div>
           )}
@@ -406,14 +408,14 @@ const History = () => {
       ) : (
         /* Empty State */
         <div className="card py-16 text-center space-y-4">
-          <div className="w-16 h-16 bg-slate-100 dark:bg-surface-elevatedDark rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-200/80 dark:border-white/[0.06]">
+          <div className="w-16 h-16 bg-theme-elevated rounded-2xl flex items-center justify-center mx-auto text-theme-muted border border-theme-border">
             <Calendar size={30} />
           </div>
           <div className="max-w-sm mx-auto">
-            <h3 className="font-bold text-base text-slate-900 dark:text-white">
+            <h3 className="font-bold text-base text-theme-text">
               No Scan History Recorded
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-theme-muted mt-1">
               Any scan you analyze in the Diagnostic Studio is automatically stored locally in your browser for chronological auditing.
             </p>
           </div>
@@ -426,7 +428,7 @@ const History = () => {
               onClick={seedSampleHistory}
               className="btn-secondary text-xs flex items-center gap-1.5"
             >
-              <Sparkles size={14} className="text-blue-500" />
+              <Sparkles size={14} className="text-forest dark:text-darkEmerald-primary" />
               <span>Load Sample History</span>
             </button>
           </div>
@@ -436,24 +438,24 @@ const History = () => {
       {/* Inspect Modal Dialog */}
       <AnimatePresence>
         {selectedScan && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fade-in">
-            <div className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 relative border-slate-200 dark:border-white/[0.14] shadow-2xl">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200/90 dark:border-white/[0.08]">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/70 dark:bg-black/80 backdrop-blur-md animate-fade-in">
+            <div className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 relative border-theme-border shadow-2xl">
+              <div className="flex items-center justify-between pb-3 border-b border-theme-border">
                 <div>
-                  <span className="font-mono text-xs text-slate-400">{selectedScan.id}</span>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  <span className="font-mono text-xs text-theme-muted">{selectedScan.id}</span>
+                  <h3 className="text-base font-bold text-theme-text">
                     Scan Inspection Detail
                   </h3>
                 </div>
                 <button
                   onClick={() => setSelectedScan(null)}
-                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.08] text-slate-400 hover:text-slate-700 dark:hover:text-white"
+                  className="p-1 rounded-lg hover:bg-theme-elevated text-theme-muted hover:text-theme-text"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              <div className="rounded-xl overflow-hidden bg-[#060709] border border-slate-800 flex items-center justify-center max-h-80">
+              <div className="rounded-xl overflow-hidden bg-[#0A0E0C] border border-theme-border flex items-center justify-center max-h-80">
                 <img
                   src={selectedScan.previewUrl}
                   alt={selectedScan.imageName}
@@ -462,49 +464,49 @@ const History = () => {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Verdict</span>
-                  <span className={`font-bold mt-0.5 block ${selectedScan.prediction === 'Stone' ? 'text-danger' : 'text-success'}`}>
+                <div className="p-2.5 bg-theme-elevated rounded-xl border border-theme-border">
+                  <span className="text-[10px] text-theme-muted uppercase font-semibold block">Verdict</span>
+                  <span className={`font-bold mt-0.5 block ${selectedScan.prediction === 'Stone' ? 'text-terracotta dark:text-darkEmerald-accent' : 'text-forest dark:text-darkEmerald-primary'}`}>
                     {selectedScan.prediction === 'Stone' ? 'Nephrolithiasis' : 'Negative'}
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Confidence</span>
-                  <span className="font-bold font-mono mt-0.5 block text-slate-900 dark:text-white">
+                <div className="p-2.5 bg-theme-elevated rounded-xl border border-theme-border">
+                  <span className="text-[10px] text-theme-muted uppercase font-semibold block">Confidence</span>
+                  <span className="font-bold font-mono mt-0.5 block text-theme-text">
                     {selectedScan.confidence}%
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Checkpoint 1</span>
-                  <span className="font-bold font-mono mt-0.5 block text-slate-900 dark:text-white">
+                <div className="p-2.5 bg-theme-elevated rounded-xl border border-theme-border">
+                  <span className="text-[10px] text-theme-muted uppercase font-semibold block">Checkpoint 1</span>
+                  <span className="font-bold font-mono mt-0.5 block text-theme-text">
                     {selectedScan.model1Prob || selectedScan.confidence}%
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
-                  <span className="text-[10px] text-slate-400 uppercase font-semibold block">Checkpoint 2</span>
-                  <span className="font-bold font-mono mt-0.5 block text-slate-900 dark:text-white">
+                <div className="p-2.5 bg-theme-elevated rounded-xl border border-theme-border">
+                  <span className="text-[10px] text-theme-muted uppercase font-semibold block">Checkpoint 2</span>
+                  <span className="font-bold font-mono mt-0.5 block text-theme-text">
                     {selectedScan.model2Prob || selectedScan.confidence}%
                   </span>
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl text-xs space-y-1 border border-slate-200/80 dark:border-white/[0.06]">
-                <div className="flex justify-between text-slate-500 dark:text-slate-400">
+              <div className="p-3 bg-theme-elevated rounded-xl text-xs space-y-1 border border-theme-border">
+                <div className="flex justify-between text-theme-muted">
                   <span>File Name:</span>
-                  <span className="font-medium text-slate-800 dark:text-slate-200">{selectedScan.imageName}</span>
+                  <span className="font-medium text-theme-text">{selectedScan.imageName}</span>
                 </div>
-                <div className="flex justify-between text-slate-500 dark:text-slate-400">
+                <div className="flex justify-between text-theme-muted">
                   <span>Timestamp:</span>
-                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                  <span className="font-medium text-theme-text">
                     {new Date(selectedScan.timestamp).toLocaleString()}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200/90 dark:border-white/[0.08]">
+              <div className="flex justify-end gap-2 pt-2 border-t border-theme-border">
                 <button
                   onClick={() => deleteScan(selectedScan.id)}
-                  className="btn-secondary text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                  className="btn-secondary text-xs text-terracotta dark:text-darkEmerald-accent hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30"
                 >
                   Delete Record
                 </button>

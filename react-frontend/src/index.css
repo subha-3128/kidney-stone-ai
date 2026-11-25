@@ -3,65 +3,237 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    @apply border-border-color dark:border-border-color-dark;
+  :root {
+    /* Theme 1: Light Mode – Sage Clinical */
+    --bg-app: #F6F5F0;             /* Warm Ivory */
+    --bg-card: #FFFFFF;            /* Cards */
+    --bg-elevated: #EDECE6;        /* Warm Ivory Sub-surface */
+    --bg-panel: #FAF9F6;           /* Subtle Panel */
+    --primary: #244A3C;            /* Forest Green */
+    --primary-hover: #1C3A2F;
+    --primary-subtle: #EBF1EE;
+    --secondary: #7A9B86;          /* Sage Green */
+    --secondary-hover: #658470;
+    --secondary-subtle: #EDF3EF;
+    --accent: #D27A5C;             /* Terracotta */
+    --accent-hover: #BD6649;
+    --accent-subtle: #FBECE7;
+    --text-main: #202923;          /* Charcoal */
+    --text-muted: #758078;         /* Muted Text */
+    --border-color: #E4E7E0;       /* Borders */
+    --border-color-hover: #CBD2C6;
+    --success: #244A3C;            /* Forest Green for negative / normal */
+    --success-subtle: #EBF1EE;
+    --danger: #D27A5C;             /* Terracotta for stone / alert */
+    --danger-subtle: #FBECE7;
   }
+
+  .dark {
+    /* Theme 2: Dark Mode – Dark Emerald */
+    --bg-app: #131B17;             /* Dark Emerald Background */
+    --bg-card: #1C2821;            /* Dark Emerald Cards */
+    --bg-elevated: #23322A;        /* Elevated Inner Panels */
+    --bg-panel: #17221C;           /* Dark Emerald Panel */
+    --primary: #8BB49A;            /* Primary Mint / Light Emerald */
+    --primary-hover: #A0C6AF;
+    --primary-subtle: rgba(139, 180, 154, 0.16);
+    --secondary: #7A9B86;          /* Sage Green */
+    --secondary-hover: #91B09C;
+    --secondary-subtle: rgba(122, 155, 134, 0.16);
+    --accent: #E08B6D;             /* Accent Terracotta */
+    --accent-hover: #E89E84;
+    --accent-subtle: rgba(224, 139, 109, 0.18);
+    --text-main: #E7EEE8;          /* Main Soft Light Text */
+    --text-muted: #8FA295;         /* Muted Text */
+    --border-color: #34443A;       /* Dark Emerald Borders */
+    --border-color-hover: #4A5F52;
+    --success: #8BB49A;            /* Light Emerald */
+    --success-subtle: rgba(139, 180, 154, 0.16);
+    --danger: #E08B6D;             /* Terracotta */
+    --danger-subtle: rgba(224, 139, 109, 0.18);
+  }
+
+  * {
+    border-color: var(--border-color);
+  }
+
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
+
   html, body, #root {
-    @apply bg-background dark:bg-background-dark text-text-primary dark:text-text-primary-dark font-sans min-h-screen antialiased;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
 }
 
 @layer components {
-  /* Premium Glassmorphic Card */
+  /* Cohesive Cards */
   .card {
-    @apply bg-surface dark:bg-surface-dark rounded-2xl border border-slate-200/90 dark:border-white/[0.08] p-6 transition-all duration-200 shadow-premium dark:shadow-premium-dark;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 20px -2px rgba(32, 41, 35, 0.05);
+  }
+
+  .dark .card {
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
   
   .card-hover {
-    @apply card hover:shadow-premium-lg hover:border-slate-300 dark:hover:border-white/[0.16] hover:-translate-y-0.5;
+    @apply card;
+  }
+  .card-hover:hover {
+    border-color: var(--border-color-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -4px rgba(32, 41, 35, 0.09);
+  }
+  .dark .card-hover:hover {
+    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.55);
   }
 
-  /* Executive Primary Action Button (Indigo-Cobalt Gradient with Specular Highlight) */
+  /* Forest Green / Light Emerald Primary Action Button */
   .btn-primary {
-    @apply bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-md shadow-blue-600/20 hover:shadow-glow-primary active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none select-none text-sm border border-blue-400/30;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 4px 12px -2px rgba(37, 99, 235, 0.35);
+    background-color: var(--primary);
+    color: #FFFFFF;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    user-select: none;
+    border: 1px solid transparent;
+    box-shadow: 0 2px 8px -1px rgba(36, 74, 60, 0.3);
+  }
+  .btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 14px -1px rgba(36, 74, 60, 0.4);
+  }
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .dark .btn-primary {
+    background-color: var(--primary);
+    color: #131B17;
+    box-shadow: 0 2px 10px -1px rgba(139, 180, 154, 0.3);
+  }
+  .dark .btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 16px -1px rgba(139, 180, 154, 0.45);
   }
 
-  /* Refined Secondary Surface Button */
+  /* Refined Secondary Button */
   .btn-secondary {
-    @apply bg-surface dark:bg-surface-elevatedDark text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-[0.98] select-none text-sm shadow-subtle hover:border-slate-300 dark:hover:border-white/[0.2];
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    user-select: none;
+    box-shadow: 0 1px 3px 0 rgba(32, 41, 35, 0.04);
+  }
+  .btn-secondary:hover {
+    background-color: var(--bg-elevated);
+    border-color: var(--border-color-hover);
+  }
+  .btn-secondary:active {
+    transform: scale(0.98);
   }
 
-  /* Clinical Danger / Alert Button */
-  .btn-danger {
-    @apply bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-md shadow-rose-600/20 hover:shadow-glow-danger active:scale-[0.98] select-none text-sm border border-rose-400/30;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 12px -2px rgba(244, 63, 94, 0.35);
+  /* Terracotta Accent Button */
+  .btn-accent {
+    background-color: var(--accent);
+    color: #FFFFFF;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    user-select: none;
+    box-shadow: 0 2px 10px -1px rgba(210, 122, 92, 0.35);
+  }
+  .btn-accent:hover {
+    background-color: var(--accent-hover);
+  }
+  .btn-accent:active {
+    transform: scale(0.98);
   }
 
-  /* Badge Styles */
+  /* Badges */
   .badge {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide select-none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    user-select: none;
   }
 
   .badge-primary {
-    @apply badge bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60;
+    background-color: var(--primary-subtle);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+  }
+  .dark .badge-primary {
+    border-color: rgba(139, 180, 154, 0.4);
   }
 
+  .badge-accent,
   .badge-danger {
-    @apply badge bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60;
+    background-color: var(--danger-subtle);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+  }
+  .dark .badge-danger {
+    border-color: rgba(224, 139, 109, 0.4);
   }
 
   .badge-success {
-    @apply badge bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60;
+    background-color: var(--success-subtle);
+    color: var(--success);
+    border: 1px solid var(--success);
+  }
+  .dark .badge-success {
+    border-color: rgba(139, 180, 154, 0.4);
   }
 
   .badge-neutral {
-    @apply badge bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08];
+    background-color: var(--bg-elevated);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
   }
 
   /* Radiologic Inspection Viewport Filters */
@@ -82,7 +254,7 @@
   }
 }
 
-/* Subtle Modern Scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -91,7 +263,11 @@
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300/80 dark:bg-white/[0.12] rounded-full hover:bg-slate-400 dark:hover:bg-white/[0.25];
+  background-color: var(--border-color-hover);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
 }
 
 /* Precision Circular Progress Gauge Smooth Transition */

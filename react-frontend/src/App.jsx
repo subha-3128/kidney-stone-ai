@@ -25,7 +25,7 @@ function App() {
 
   return (
     <Router>
-      <div className={`min-h-screen bg-background dark:bg-background-dark text-text-primary dark:text-text-primary-dark transition-colors duration-200`}>
+      <div className="min-h-screen transition-colors duration-200" style={{ backgroundColor: 'var(--bg-app)', color: 'var(--text-main)' }}>
         <div className="flex min-h-screen">
           <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
           

@@ -15,34 +15,34 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     <aside
       className={`fixed inset-y-0 left-0 z-40 ${
         isOpen ? 'w-64' : 'w-20'
-      } bg-white dark:bg-surface-panelDark border-r border-slate-200/90 dark:border-white/[0.08] transition-all duration-300 ease-in-out flex flex-col justify-between select-none shadow-subtle`}
+      } bg-theme-card border-r border-theme-border transition-all duration-300 ease-in-out flex flex-col justify-between select-none shadow-subtle`}
     >
       <div>
         {/* Brand Header */}
-        <div className={`flex items-center ${isOpen ? 'justify-between px-5' : 'justify-center px-3'} py-4 border-b border-slate-200/90 dark:border-white/[0.08] min-h-[69px]`}>
+        <div className={`flex items-center ${isOpen ? 'justify-between px-5' : 'justify-center px-3'} py-4 border-b border-theme-border min-h-[69px]`}>
           {isOpen ? (
             <Link to="/" className="flex items-center gap-3 overflow-hidden group">
-              <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/25 text-white font-bold">
+              <div className="w-9 h-9 bg-forest dark:bg-darkEmerald-elevated text-white dark:text-darkEmerald-primary border border-forest-700 dark:border-darkEmerald-border rounded-xl flex items-center justify-center shrink-0 shadow-sm font-bold">
                 <HeartPulse size={19} className="animate-pulse" />
               </div>
               <div className="whitespace-nowrap overflow-hidden">
-                <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white leading-tight block">
+                <span className="font-bold text-sm tracking-tight text-theme-text leading-tight block">
                   KidneyAI Studio
                 </span>
-                <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">
+                <span className="text-[11px] text-theme-muted block font-medium">
                   Precision CAD Engine
                 </span>
               </div>
             </Link>
           ) : (
-            <Link to="/" className="w-9 h-9 bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/25 text-white font-bold">
+            <Link to="/" className="w-9 h-9 bg-forest dark:bg-darkEmerald-elevated text-white dark:text-darkEmerald-primary border border-forest-700 dark:border-darkEmerald-border rounded-xl flex items-center justify-center shrink-0 shadow-sm font-bold">
               <HeartPulse size={19} />
             </Link>
           )}
           
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-theme-muted hover:text-theme-text hover:bg-theme-elevated transition-colors cursor-pointer"
             aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
             title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
@@ -84,11 +84,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     : 'justify-center w-11 h-11 p-0 rounded-xl mx-auto'
                 } transition-all duration-150 font-medium text-sm ${
                   isActive 
-                    ? 'bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/25 font-semibold' 
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-forest text-white dark:bg-darkEmerald-primary dark:text-charcoal-900 shadow-sm font-semibold' 
+                    : 'text-theme-muted hover:bg-theme-elevated hover:text-theme-text'
                 }`}
               >
-                <Icon size={18} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors'}`} />
+                <Icon size={18} className={`shrink-0 ${isActive ? 'text-white dark:text-charcoal-900' : 'text-theme-muted group-hover:text-forest dark:group-hover:text-darkEmerald-primary transition-colors'}`} />
                 {isOpen && (
                   <span className="whitespace-nowrap overflow-hidden">
                     {item.label}
@@ -97,7 +97,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
                 {/* Floating tooltip when folded */}
                 {!isOpen && (
-                  <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-slate-900 dark:bg-slate-800 text-white text-xs font-semibold rounded-lg shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-slate-700/50">
+                  <div className="absolute left-full ml-3 px-2.5 py-1.5 bg-charcoal text-white dark:bg-darkEmerald-elevated dark:text-darkEmerald-text text-xs font-semibold rounded-lg shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-theme-border">
                     {item.label}
                   </div>
                 )}
@@ -108,26 +108,26 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       </div>
 
       {/* Footer System Status Card */}
-      <div className="p-3 border-t border-slate-200/90 dark:border-white/[0.08]">
+      <div className="p-3 border-t border-theme-border">
         {isOpen ? (
-          <div className="bg-slate-50 dark:bg-surface-elevatedDark rounded-xl p-3 border border-slate-200/80 dark:border-white/[0.08]">
+          <div className="bg-theme-elevated rounded-xl p-3 border border-theme-border">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <span className="text-[10px] font-bold text-theme-muted uppercase tracking-wider">
                 Inference Cluster
               </span>
-              <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
+              <span className="inline-flex h-2 w-2 rounded-full bg-forest dark:bg-darkEmerald-primary shadow-sm animate-pulse"></span>
             </div>
-            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+            <p className="text-xs font-semibold text-theme-text">
               Dual Checkpoint Soft-Vote
             </p>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
+            <p className="text-[10px] text-theme-muted mt-0.5 font-mono">
               224×224 RGB &bull; Sigmoid Mean
             </p>
           </div>
         ) : (
           <div className="flex justify-center py-2" title="Dual Checkpoint Soft-Vote Online">
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 flex items-center justify-center">
-              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <div className="w-8 h-8 rounded-lg bg-theme-elevated border border-theme-border flex items-center justify-center">
+              <div className="w-2 h-2 bg-forest dark:bg-darkEmerald-primary rounded-full animate-pulse"></div>
             </div>
           </div>
         )}
