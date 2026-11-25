@@ -4,8 +4,16 @@ An open-source deep learning framework and web application for automated binary 
 
 ---
 
+## Live Deployments
+
+- **Clinical Web Application (Vercel)**: [https://kidney-stone-ai.vercel.app/](https://kidney-stone-ai.vercel.app/)
+- **Inference API & Model Host (Hugging Face Spaces)**: [https://huggingface.co/spaces/nubruuuu/kidney-stone-backend](https://huggingface.co/spaces/nubruuuu/kidney-stone-backend)
+
+---
+
 ## Table of Contents
 
+- [Live Deployments](#live-deployments)
 - [Project Overview](#project-overview)
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
@@ -19,11 +27,6 @@ An open-source deep learning framework and web application for automated binary 
 - [Model Architecture and Training](#model-architecture-and-training)
 - [Explainability (Grad-CAM)](#explainability-grad-cam)
 - [Repository Structure](#repository-structure)
-- [Installation and Setup](#installation-and-setup)
-  - [Prerequisites](#prerequisites)
-  - [Frontend Setup](#frontend-setup)
-  - [Model Training Setup](#model-training-setup)
-  - [Local Inference Backend Setup](#local-inference-backend-setup)
 - [Deployment and API Communication](#deployment-and-api-communication)
 - [Limitations and Medical Disclaimer](#limitations-and-medical-disclaimer)
 
@@ -384,96 +387,6 @@ kidney-stone-ai/
 ```
 
 *Note on Backend Code: The inference backend is hosted externally on Hugging Face Spaces (`nubruuuu/kidney-stone-backend`). When cloned locally for development, backend files reside in `kidney-stone-backend/` (which is excluded from this repository via `.gitignore`).*
-
----
-
-## Installation and Setup
-
-### Prerequisites
-- **Node.js**: Version 18.x or higher
-- **npm**: Version 9.x or higher
-- **Python**: Version 3.11 or 3.12
-- **Git**
-
-### Clone Repository
-```bash
-git clone https://github.com/subha-3128/kidney-stone-ai.git
-cd kidney-stone-ai
-```
-
----
-
-### Frontend Setup
-
-The frontend runs locally and connects directly to the hosted inference service.
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd react-frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Open `http://localhost:3000` in your browser.
-
-To build the frontend for production:
-```bash
-npm run build
-npm run preview
-```
-
----
-
-### Model Training Setup
-
-To retrain the models locally from the dataset:
-
-1. Create and activate a Python virtual environment:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-
-2. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. Run the training script:
-   ```bash
-   python training/simple_train.py
-   ```
-
-The script will:
-- Read images from [`dataset/`](dataset/).
-- Compute class weights for `Normal` and `stone`.
-- Train the custom CNN model for two iterations.
-- Save `final_efficientnet_model.h5` and `final_resnet50_model.h5` in the working directory.
-
----
-
-### Local Inference Backend Setup
-
-If you wish to run the Gradio backend server locally:
-
-1. Obtain the backend script `app.py` and model files (`final_efficientnet_model.h5`, `final_resnet50_model.h5`).
-2. Install backend dependencies:
-   ```bash
-   pip install gradio tensorflow pillow numpy
-   ```
-3. Start the Gradio app:
-   ```bash
-   python app.py
-   ```
-4. Update the client connection in [`react-frontend/src/pages/Upload.jsx`](react-frontend/src/pages/Upload.jsx#L41) to target your local server instance (`http://localhost:7860`) instead of the Hugging Face Space.
 
 ---
 
