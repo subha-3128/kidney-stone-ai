@@ -9,6 +9,11 @@ An open-source deep learning framework and web application for automated binary 
 - [Project Overview](#project-overview)
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
+  - [Architectural Overview](#architectural-overview)
+  - [Architecture Diagram](#architecture-diagram)
+  - [Tier Breakdown & Responsibilities](#tier-breakdown--responsibilities)
+  - [End-to-End Request-Response Lifecycle](#end-to-end-request-response-lifecycle)
+  - [Key Architectural Design Decisions](#key-architectural-design-decisions)
 - [Technology Stack](#technology-stack)
 - [Dataset Specifications](#dataset-specifications)
 - [Model Architecture and Training](#model-architecture-and-training)
@@ -51,42 +56,152 @@ The technical approach comprises:
 
 ## System Architecture
 
-The following diagram illustrates the relationship between the offline training workflow, the hosted inference service, and the web client.
+The platform is designed around a decoupled, three-tier architecture that isolates client-side presentation, serverless cloud inference, and offline model research and interpretability.
+
+### Architectural Overview
+
+The system establishes clear separation of concerns across three distinct layers:
+1. **Client Tier (Presentation & Interaction)**: A responsive Single-Page Application (SPA) built with React 18, Vite, and Tailwind CSS, deployed on Vercel. It manages client-side file intake, interactive UI states, diagnostic metrics rendering, and local HTML report compilation.
+2. **Inference Service Tier (Execution & Decision)**: A cloud-hosted Python inference service powered by Gradio and TensorFlow on Hugging Face Spaces. It standardizes incoming scans, executes forward passes across two loaded CNN checkpoints, and performs soft-vote probability averaging.
+3. **Offline Model Development Tier**: An offline pipeline responsible for dataset curation, class weight balancing, real-time image augmentation, model training, and post-hoc Grad-CAM explainability generation.
+
+---
+
+### Architecture Diagram
 
 ```mermaid
 flowchart TD
-    subgraph Data & Offline Training
-        A["Curated Dataset<br/>(9,416 Images)"] --> B["Data Augmentation &<br/>Class Weighting"]
-        B --> C["Keras Sequential CNN<br/>Training Pipeline"]
-        C --> D["Trained Weights<br/>(final_efficientnet_model.h5)"]
-        C --> E["Trained Weights<br/>(final_resnet50_model.h5)"]
-        C --> F["Grad-CAM Module<br/>(training/gradcam.py)"]
+    subgraph ClientTier["Client Tier (React 18 + Vite SPA)"]
+        UI_Upload["User Interface<br/>(Drag-and-Drop / File Browser)"]
+        UI_State["Reactive State Management<br/>(Analysis, Gauge, Alerts)"]
+        UI_Report["Client-Side Report Engine<br/>(HTML Blob Generation)"]
+        UI_Upload --> UI_State
+        UI_State --> UI_Report
     end
 
-    subgraph Inference Backend (Hugging Face Spaces)
-        G["Gradio Application<br/>(app.py)"]
-        D -->|Load Checkpoint| G
-        E -->|Load Checkpoint| G
-        H["Input Image<br/>(224x224 RGB)"] --> G
-        G --> I["Dual Model Inference<br/>Probability Averaging"]
-        I --> J["Output: Label & Confidence"]
+    subgraph TransportLayer["Transport & Protocol Layer"]
+        ClientSDK["@gradio/client SDK<br/>(WebSocket / HTTP Protocol)"]
     end
 
-    subgraph Client Application (Vercel)
-        K["React 18 + Vite SPA<br/>(react-frontend)"]
-        L["User File Upload<br/>(Drag-and-Drop)"] --> K
-        K -->|WebSocket / HTTP via @gradio/client| G
-        J -->|JSON Response| K
-        K --> M["Visual Metrics & HTML Report"]
+    subgraph InferenceTier["Inference Tier (Hugging Face Spaces)"]
+        API_Endpoint["Gradio API Server<br/>(POST /predict via app.py)"]
+        Preprocess["Preprocessing Pipeline<br/>(RGB Mode, 224x224, Rescale 1/255)"]
+        
+        subgraph ModelEnsemble["Dual Model Checkpoint Forward Passes"]
+            M1["Model Checkpoint 1<br/>Keras Sequential CNN"]
+            M2["Model Checkpoint 2<br/>Keras Sequential CNN"]
+        end
+
+        EnsembleLogic["Soft-Vote Decision Rule<br/>p_avg = (p1 + p2) / 2<br/>Threshold = 0.5"]
+        Fallback["Demo Simulation Fallback<br/>(Active if weights unmounted)"]
+
+        API_Endpoint --> Preprocess
+        Preprocess --> M1
+        Preprocess --> M2
+        M1 --> EnsembleLogic
+        M2 --> EnsembleLogic
+        API_Endpoint -.->|On Load Error| Fallback
     end
+
+    subgraph OfflinePipeline["Offline Training & Interpretability Tier"]
+        RawData["Curated Scan Dataset<br/>(Normal: 4,414 | Stone: 5,002)"]
+        DataGen["ImageDataGenerator<br/>(Augmentation + 80/20 Split)"]
+        ClassWeights["Inverse Frequency Loss Balancing<br/>w0=1.0666, w1=0.9412"]
+        Trainer["Training Pipeline<br/>(Adam, Binary Crossentropy, Callbacks)"]
+        H5_Export["Serialized Model Checkpoints<br/>(final_efficientnet_model.h5, final_resnet50_model.h5)"]
+        GradCAMModule["Offline Explainability Script<br/>(training/gradcam.py)"]
+
+        RawData --> DataGen
+        RawData --> ClassWeights
+        DataGen --> Trainer
+        ClassWeights --> Trainer
+        Trainer --> H5_Export
+        Trainer --> GradCAMModule
+    end
+
+    %% Cross-Tier Connections
+    UI_Upload -->|Binary Image Blob| ClientSDK
+    ClientSDK -->|Serialized Payload| API_Endpoint
+    EnsembleLogic -->|Prediction & Confidence| ClientSDK
+    Fallback -.->|Mock Verdict| ClientSDK
+    ClientSDK -->|Unpack Response Data| UI_State
+    H5_Export -->|Mounted Checkpoints| ModelEnsemble
 ```
 
-### Communication Flow
-1. The user uploads an image via the React frontend (`react-frontend/src/pages/Upload.jsx`).
-2. The client application connects to the Hugging Face Space using the `@gradio/client` SDK.
-3. The image blob is submitted to the `/predict` Gradio endpoint.
-4. The server standardizes the image (converts to RGB, resizes to 224x224, normalizes pixels to $[0, 1]$), runs inference across the loaded models, and returns the ensemble verdict and confidence score.
-5. The frontend displays the results and allows exporting an HTML summary report.
+---
+
+### Tier Breakdown & Responsibilities
+
+#### 1. Client Tier (Presentation & Interaction)
+- **Host & Environment**: Hosted as static production assets on Vercel.
+- **File Ingestion**: Implemented using `react-dropzone` in [`react-frontend/src/pages/Upload.jsx`](react-frontend/src/pages/Upload.jsx), supporting `.png`, `.jpg`, and `.jpeg` formats up to 10 MB.
+- **Client-Side Previews**: Ingested files are converted into temporary in-memory Data URLs using `FileReader.readAsDataURL`, providing instantaneous visual feedback before network dispatch.
+- **State Management**: Tracks asynchronous submission states (`analyzing: true/false`), handles network exceptions, and animates diagnostic gauges using SVG stroke-dashoffset transitions.
+- **Report Generation**: Synthesizes analysis timestamp, file metadata, prediction verdict, confidence bar, and medical disclaimers into a self-contained HTML document via `Blob([htmlReport], { type: 'text/html' })` and triggers a client-side download without server dependencies.
+
+#### 2. Transport & Protocol Layer
+- **Client Integration**: Driven by the `@gradio/client` library.
+- **Communication Channel**: Connects dynamically to the remote Hugging Face Space endpoint (`nubruuuu/kidney-stone-backend`).
+- **RPC Encapsulation**: Dispatches binary image data to `/predict`, automatically managing WebSocket negotiation, HTTP long-polling fallbacks, and response payload serialization without requiring custom REST endpoints or CORS proxy configurations.
+
+#### 3. Inference Service Tier (Execution & Decision)
+- **Host & Runtime**: Executed in a Python runtime on Hugging Face Spaces with dynamic ZeroGPU acceleration support via `@spaces.GPU`.
+- **Model Checkpoint Management**: On initialization, the backend loads both serialized Keras H5 checkpoints (`final_efficientnet_model.h5` and `final_resnet50_model.h5`) into memory for persistent, warm request handling.
+- **Input Preprocessing**:
+  1. Ensures 3-channel input by converting grayscale or RGBA buffers via `PIL.Image.convert('RGB')`.
+  2. Resizes spatial dimensions to $224 \times 224$ pixels using bilinear interpolation.
+  3. Rescales pixel intensities from $[0, 255]$ to $[0.0, 1.0]$ via floating-point division by 255.0.
+  4. Expands the tensor to a 4D batch shape of $(1, 224, 224, 3)$.
+- **Parallel Inference & Soft-Voting**:
+  - Computes sigmoid posterior probabilities $p_1$ and $p_2$ from each checkpoint forward pass.
+  - Computes the ensemble probability: $\hat{p}_{\text{avg}} = \frac{p_1 + p_2}{2}$.
+  - Evaluates the binary decision boundary at threshold 0.5:
+    - If $\hat{p}_{\text{avg}} > 0.5 \rightarrow$ Classification is `Stone` with confidence $\hat{p}_{\text{avg}} \times 100\%$.
+    - Otherwise $\rightarrow$ Classification is `Normal` with confidence $(1 - \hat{p}_{\text{avg}}) \times 100\%$.
+- **Fault-Tolerant Fallback**: If checkpoint files are unmounted or TensorFlow fails to load, the service falls back to a deterministic demo mode to prevent unhandled 500 errors and enable continuous UI validation.
+
+#### 4. Offline Model Training & Interpretability Tier
+- **Training Pipeline**: Located in [`training/simple_train.py`](training/simple_train.py). Trains the custom 4-block Conv2D Sequential CNN architecture on the 9,416-image dataset with dynamic data augmentation and inverse class frequency loss weighting.
+- **Post-Hoc Explainability**: Located in [`training/gradcam.py`](training/gradcam.py). Implements an offline Grad-CAM module that extracts feature activations and gradients from the final convolutional layer, producing JET colormap overlays that highlight visual regions influencing model decisions.
+
+---
+
+### End-to-End Request-Response Lifecycle
+
+```
+[User Browser]                     [Hugging Face Spaces Backend]
+      |                                           |
+      | 1. Selects image (drag-and-drop)          |
+      | 2. Client renders preview & Data URL      |
+      |                                           |
+      | 3. Click "Analyze Image"                  |
+      |    - Generates binary Image Blob          |
+      |    - Calls client.predict("/predict")     |
+      |------------------------------------------>|
+      |       (WebSocket / HTTP via SDK)          |
+      |                                           | 4. Validate payload
+      |                                           | 5. Convert to RGB & resize to 224x224
+      |                                           | 6. Scale pixels to [0.0, 1.0]
+      |                                           | 7. Forward pass Model 1 -> p1
+      |                                           | 8. Forward pass Model 2 -> p2
+      |                                           | 9. Compute p_avg = (p1 + p2) / 2
+      |                                           | 10. Format [verdict, confidence]
+      |<------------------------------------------|
+      |       Return JSON: ["Stone", confidence]  |
+      |                                           |
+      | 11. React updates state                   |
+      | 12. Animates SVG gauge & verdict banner   |
+      | 13. User exports HTML report (optional)   |
+```
+
+---
+
+### Key Architectural Design Decisions
+
+- **Client-Side Decoupling**: Decoupling the user interface from the machine learning runtime eliminates large model weight downloads (keeping frontend bundle size $< 500$ KB) and ensures rapid initial page loads on mobile and low-bandwidth connections.
+- **Direct RPC Protocol via SDK**: Utilizing `@gradio/client` provides direct programmatic access to hosted Gradio apps, avoiding custom API gateway layers, manual multi-part request serializing, and CORS proxy overhead.
+- **Ensemble Variance Dampening**: Combining predictions from two independently initialized checkpoints via soft-voting smooths probability distributions and reduces classification variance compared to a single model instance.
+- **Isolated Artifact Lifecycles**: The training pipeline, model storage, inference runtime, and client application have decoupled lifecycles, enabling independent model retraining and weight updating without touching frontend presentation code.
 
 ---
 
