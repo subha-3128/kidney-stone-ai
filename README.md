@@ -1,216 +1,394 @@
-# KidneyAI Pro: An End-to-End Deep Learning Framework for Automated Nephrolithiasis Detection via Dual-Model CNN Ensemble and Grad-CAM Explainability
+# Kidney Stone Detection System
 
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange.svg)](https://www.tensorflow.org/)
-[![React](https://img.shields.io/badge/React-18.2-61DAFB.svg)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-4.5-646CFF.svg)](https://vitejs.dev/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.3-38B2AC.svg)](https://tailwindcss.com/)
-[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Spaces-ZeroGPU%20A100-yellow)](https://huggingface.co/spaces/nubruuuu/kidney-stone-backend)
-[![Vercel](https://img.shields.io/badge/Deployed-Vercel-black.svg)](https://kidney-stone-ai.vercel.app/)
-
-An end-to-end computer-aided detection (CAD) platform for automated binary classification of kidney stones (*nephrolithiasis*) from renal B-mode ultrasound and computed tomography (CT) scans. The system unites an architecturally heterogeneous dual-model convolutional neural network (CNN) ensemble with Gradient-weighted Class Activation Mapping (Grad-CAM) explainability, serverless ZeroGPU acceleration on Hugging Face Spaces, and a modern progressive web application.
+An open-source deep learning framework and web application for automated binary classification of kidney stones (*nephrolithiasis*) from renal medical images. The repository includes a model training pipeline with class weighting and image augmentation, an offline Grad-CAM explainability module, a Gradio-based inference backend configuration, and a React web interface connected via the `@gradio/client` library.
 
 ---
 
-## 🌟 Live Deployments
+## Table of Contents
 
-- **Clinical Web Frontend (Vercel):** [https://kidney-stone-ai.vercel.app/](https://kidney-stone-ai.vercel.app/)
-- **Inference API & Model Registry (Hugging Face ZeroGPU):** [https://huggingface.co/spaces/nubruuuu/kidney-stone-backend](https://huggingface.co/spaces/nubruuuu/kidney-stone-backend)
-
----
-
-## 📄 Academic Research Paper
-
-This repository includes a publication-ready research paper written in standard **IEEE two-column conference format** (`\documentclass[conference]{IEEEtran}`).
-
-- **Paper Title:** *KidneyAI Pro: An End-to-End Deep Learning Framework for Automated Nephrolithiasis Detection via Dual-Model CNN Ensemble, Grad-CAM Explainability, and ZeroGPU Serverless Deployment*
-- **Authors:**
-  - **Subhajit Bepari** — *Department of Computer Science and Engineering, SRM Institute of Science and Technology, Kattankulathur, Chennai, Tamil Nadu, India* (`sb3128@srmist.edu.in`)
-  - **Malar Venthan** — *Department of Computer Science and Engineering, SRM Institute of Science and Technology, Kattankulathur, Chennai, Tamil Nadu, India* (`mc1796@srmist.edu.in`)
-  - **Dr. Rajmohan R** — *Department of Computer Science and Engineering, SRM Institute of Science and Technology, Kattankulathur, Chennai, Tamil Nadu, India* (`rr6767@srmist.edu.in`)
-- **LaTeX Source File:** [`research_paper.md`](./research_paper.md) *(contains a single, self-contained LaTeX code block ready for Overleaf)*
-- **Publication Figures:** [`paper_figures/`](./paper_figures/) *(6 publication-quality figures at up to 300 DPI)*
-
-### Paper Abstract
-> Nephrolithiasis (kidney stone disease) afflicts approximately 10% of the global population and constitutes a leading driver of emergency renal presentations. Diagnostic reliance on specialist radiologist review introduces clinically unacceptable triage delays in resource-constrained settings. Existing computer-aided detection (CAD) systems are limited by single-architecture convolutional neural networks trained on small, homogeneous datasets, poor cross-modality generalisation, and the absence of interpretability mechanisms required for clinical trust. This paper presents **KidneyAI Pro**, a fully integrated, end-to-end deep learning system for automated binary classification of renal imaging into *Normal* or *Stone* categories. The proposed framework employs a dual-model ensemble of two independently trained custom CNNs—one inspired by EfficientNet compound-scaling principles ($f_1$) and one following ResNet residual-block topology ($f_2$)—trained on a curated dataset of 9,416 renal ultrasound and CT scan images ($N_{\text{stone}} = 5{,}002$; $N_{\text{normal}} = 4{,}414$) using class-weight-balanced binary cross-entropy. Ensemble classification is performed via soft-vote probability averaging: $\hat{p}_{\text{ens}} = \frac{1}{M}\sum_{m=1}^{M} p_m$. Gradient-weighted Class Activation Mapping (Grad-CAM) generates clinically interpretable heatmaps delineating acoustic shadowing and calculi-attention regions. The inference server is deployed serverlessly on Hugging Face Spaces with dynamic ZeroGPU (NVIDIA A100) allocation, consumed by a React/Vite progressive web application through the `@gradio/client` WebSocket tunnelling library. The system achieves **94.7% validated accuracy** with a mean end-to-end inference latency of **1.8 seconds**.
-
-### How to Compile on Overleaf
-1. Create a new **Blank Project** in [Overleaf](https://www.overleaf.com/).
-2. Copy the LaTeX code block from [`research_paper.md`](./research_paper.md) and paste it into `main.tex`.
-3. Upload all 6 PNG files from [`paper_figures/`](./paper_figures/) to the Overleaf project root.
-4. Set the compiler to **pdfLaTeX** and click **Recompile**.
+- [Project Overview](#project-overview)
+- [Key Features](#key-features)
+- [System Architecture](#system-architecture)
+- [Technology Stack](#technology-stack)
+- [Dataset Specifications](#dataset-specifications)
+- [Model Architecture and Training](#model-architecture-and-training)
+- [Explainability (Grad-CAM)](#explainability-grad-cam)
+- [Repository Structure](#repository-structure)
+- [Installation and Setup](#installation-and-setup)
+  - [Prerequisites](#prerequisites)
+  - [Frontend Setup](#frontend-setup)
+  - [Model Training Setup](#model-training-setup)
+  - [Local Inference Backend Setup](#local-inference-backend-setup)
+- [Deployment and API Communication](#deployment-and-api-communication)
+- [Limitations and Medical Disclaimer](#limitations-and-medical-disclaimer)
 
 ---
 
-## 📊 Empirical Performance & Evaluation
+## Project Overview
 
-The system was evaluated on a held-out 20% validation split ($n = 1{,}883$ scans) from the 9,416-image clinical dataset:
+Kidney stone disease (nephrolithiasis) is a common urological condition requiring timely detection to prevent renal impairment, obstruction, and infection. In clinical environments, high diagnostic volumes can delay scan reviews and triage.
 
-| Model / Configuration | Accuracy | Sensitivity (Recall) | Specificity | $F_1$-Score | Latency |
-|:---|:---:|:---:|:---:|:---:|:---:|
-| **Single-CNN ($f_1$, EfficientNet-style)** | 91.3% | 92.1% | 90.4% | 91.7% | ~1.2s |
-| **Single-CNN ($f_2$, ResNet-style)** | 90.8% | 91.4% | 90.1% | 91.1% | ~1.2s |
-| **Ensemble (Uniform Loss Weighting)** | 92.6% | 93.0% | 92.1% | 92.8% | ~1.8s |
-| **KidneyAI Pro Ensemble (Proposed)** | **94.7%** | **95.1%** | **94.2%** | **94.9%** | **1.8s** |
+This project implements an automated, computer-aided workflow for binary classification of renal scan images into two categories: **Normal** and **Stone**. 
 
-- **Variance Reduction:** Soft-vote ensemble probability averaging delivers a **+3.4 percentage-point gain** over the best standalone model ($f_1$: 91.3% $\rightarrow$ 94.7%).
-- **Class-Weight Balancing:** Addressing class imbalance ($N_{\text{stone}}/N_{\text{normal}} = 1.133$) via inverse-frequency loss weights yields an additional **+2.1 percentage-point improvement** (92.6% $\rightarrow$ 94.7%).
-- **Clinical Safety Bias:** Sensitivity (95.1%) exceeds specificity (94.2%), appropriately minimising false negatives (missed kidney stones).
+The technical approach comprises:
+1. **Model Training Pipeline**: A custom convolutional neural network (CNN) trained with data augmentation, inverse class weighting to counter class imbalance, and learning rate scheduling.
+2. **Dual-Model Soft-Vote Inference**: Two independently trained model checkpoints are evaluated in parallel, and their sigmoid probabilities are averaged to produce the final classification and confidence score.
+3. **Web User Interface**: A modern React/Vite progressive web application that accepts user-uploaded scans, displays inference results with visual confidence metrics, and generates client-side diagnostic summary reports.
+4. **Serverless Inference Integration**: The frontend connects directly to a hosted Gradio application deployed on Hugging Face Spaces via WebSocket and HTTP tunnels.
 
 ---
 
-## 🔬 Mathematical Formulation & Core Algorithms
+## Key Features
 
-### 1. Class-Balanced Binary Cross-Entropy Loss
-To prevent bias toward the majority stone class, inverse class frequencies are incorporated into the loss function:
-$$w_c = \frac{N}{2 \cdot N_c}, \quad w_0 \approx 1.067 \; (\text{Normal}), \quad w_1 \approx 0.941 \; (\text{Stone})$$
-$$\mathcal{L}(\theta) = -\frac{1}{|\mathcal{B}|} \sum_{(I_i, y_i) \in \mathcal{B}} w_{y_i} \left[ y_i \log \hat{p}_i + (1 - y_i) \log(1 - \hat{p}_i) \right]$$
-
-### 2. Dual-Model Soft-Vote Ensemble Decision Rule
-Predictions from both independently trained models are collected as posterior probabilities and averaged:
-$$\hat{p}_{\text{ens}} = \frac{1}{2} \left( p_1(I) + p_2(I) \right)$$
-$$\hat{y} = \begin{cases} \text{Stone} & \text{if } \hat{p}_{\text{ens}} > 0.5 \\ \text{Normal} & \text{otherwise} \end{cases}, \qquad c = \begin{cases} \hat{p}_{\text{ens}} \times 100\% & \text{if } \hat{y} = \text{Stone} \\ (1 - \hat{p}_{\text{ens}}) \times 100\% & \text{if } \hat{y} = \text{Normal} \end{cases}$$
-
-### 3. Gradient-Weighted Class Activation Mapping (Grad-CAM)
-Explainability maps are computed by taking the gradient of the class score $y^c$ with respect to feature map activations $A^{(L)}$ of the final convolutional layer:
-$$\alpha_c^k = \frac{1}{H_L W_L} \sum_{i=1}^{H_L} \sum_{j=1}^{W_L} \frac{\partial y^c}{\partial A^{(L)}_{ijk}}, \qquad H_{ij} = \text{ReLU}\left( \sum_{k} \alpha_c^k A^{(L)}_{ijk} \right)$$
-$$\mathbf{O} = (1 - \alpha) \cdot I_{\text{raw}} + \alpha \cdot \text{colormap}_{\text{JET}}(H), \quad \alpha = 0.6$$
+- **Medical Image Ingestion**: Drag-and-drop or file browser upload supporting PNG, JPG, and JPEG image formats.
+- **Binary Classification**: Categorizes uploaded renal scans as either `Normal` (no stone detected) or `Stone` (kidney stone detected).
+- **Confidence Scoring**: Outputs an ensemble confidence percentage calculated from the mean prediction score.
+- **Diagnostic Report Generation**: Generates and downloads an HTML summary report containing scan metadata, timestamp, classification outcome, visual confidence progress bar, and clinical disclaimers.
+- **Offline Grad-CAM Module**: Implements Gradient-weighted Class Activation Mapping in Python to generate visual heatmaps of the final convolutional layer's activation regions.
+- **Responsive Web Interface**: Features light and dark theme toggling, a collapsible sidebar, and responsive mobile-first layouts built with Tailwind CSS.
 
 ---
 
-## 🖼️ Publication Figures
+## System Architecture
 
-The [`paper_figures/`](./paper_figures/) directory contains the figures used in the IEEE paper:
+The following diagram illustrates the relationship between the offline training workflow, the hosted inference service, and the web client.
 
-| Figure | Filename | Description |
-|:---:|:---|:---|
-| **Fig. 1** | [`system_overview.png`](./paper_figures/system_overview.png) | High-level three-tier architecture (Training $\rightarrow$ ZeroGPU Backend $\rightarrow$ React App) |
-| **Fig. 2** | [`detailed_architecture.png`](./paper_figures/detailed_architecture.png) | Multi-stage pipeline: Ingestion, Normalization, Parallel Inference, Ensemble, Grad-CAM |
-| **Fig. 3** | [`training_curves.png`](./paper_figures/training_curves.png) | Convergence trajectories showing ReduceLROnPlateau & EarlyStopping interventions |
-| **Fig. 4** | [`class_distribution.png`](./paper_figures/class_distribution.png) | Class distribution breakdown (Normal: 4,414 vs. Stone: 5,002 scans) |
-| **Fig. 5** | [`gradcam_example.png`](./paper_figures/gradcam_example.png) | 3-panel Grad-CAM visualization localizing echogenic stone foci and acoustic shadowing |
-| **Fig. 6** | [`confidence_hist.png`](./paper_figures/confidence_hist.png) | Bimodal confidence score distribution on validation scans |
+```mermaid
+flowchart TD
+    subgraph Data & Offline Training
+        A["Curated Dataset<br/>(9,416 Images)"] --> B["Data Augmentation &<br/>Class Weighting"]
+        B --> C["Keras Sequential CNN<br/>Training Pipeline"]
+        C --> D["Trained Weights<br/>(final_efficientnet_model.h5)"]
+        C --> E["Trained Weights<br/>(final_resnet50_model.h5)"]
+        C --> F["Grad-CAM Module<br/>(training/gradcam.py)"]
+    end
+
+    subgraph Inference Backend (Hugging Face Spaces)
+        G["Gradio Application<br/>(app.py)"]
+        D -->|Load Checkpoint| G
+        E -->|Load Checkpoint| G
+        H["Input Image<br/>(224x224 RGB)"] --> G
+        G --> I["Dual Model Inference<br/>Probability Averaging"]
+        I --> J["Output: Label & Confidence"]
+    end
+
+    subgraph Client Application (Vercel)
+        K["React 18 + Vite SPA<br/>(react-frontend)"]
+        L["User File Upload<br/>(Drag-and-Drop)"] --> K
+        K -->|WebSocket / HTTP via @gradio/client| G
+        J -->|JSON Response| K
+        K --> M["Visual Metrics & HTML Report"]
+    end
+```
+
+### Communication Flow
+1. The user uploads an image via the React frontend (`react-frontend/src/pages/Upload.jsx`).
+2. The client application connects to the Hugging Face Space using the `@gradio/client` SDK.
+3. The image blob is submitted to the `/predict` Gradio endpoint.
+4. The server standardizes the image (converts to RGB, resizes to 224x224, normalizes pixels to $[0, 1]$), runs inference across the loaded models, and returns the ensemble verdict and confidence score.
+5. The frontend displays the results and allows exporting an HTML summary report.
 
 ---
 
-## 📁 Repository Structure
+## Technology Stack
+
+### Frontend Application
+| Technology | Version | Purpose |
+| :--- | :--- | :--- |
+| **React** | 18.2.0 | Core UI library |
+| **Vite** | 4.3.0 | Build tool and local development server |
+| **Tailwind CSS** | 3.3.0 | Utility-first styling framework |
+| **@gradio/client** | 2.3.1 | Programmatic client for Gradio backend communication |
+| **Framer Motion** | 10.0.0 | UI transitions and component animations |
+| **Lucide React** | 0.263.0 | Iconography |
+| **React Dropzone** | 14.2.3 | File upload and drag-and-drop management |
+| **React Router DOM** | 6.8.0 | Client-side routing |
+| **Recharts** | 2.5.0 | Data charting library |
+
+### Machine Learning and Backend
+| Technology | Version / Specification | Purpose |
+| :--- | :--- | :--- |
+| **Python** | 3.11 / 3.12 | Execution environment |
+| **TensorFlow / Keras** | 2.x | Model definition, training, and `.h5` model loading |
+| **Gradio** | 6.20.0 | Backend inference API and UI framework |
+| **OpenCV (opencv-python-headless)** | 4.x | Heatmap generation and colormap blending in Grad-CAM |
+| **Pillow (PIL)** | - | Image file reading and array conversion |
+| **NumPy** | - | Tensor manipulation and array mathematics |
+| **Scikit-learn** | - | Evaluation metrics and utilities |
+
+---
+
+## Dataset Specifications
+
+The dataset is organized as a flat directory structure under [`dataset/`](dataset/) split into two distinct classes.
+
+```text
+dataset/
+├── Normal/    # 4,414 images
+└── stone/     # 5,002 images
+```
+
+### Class Distribution
+| Class | Directory | Image Count | File Format | Native Resolution |
+| :--- | :--- | :---: | :---: | :---: |
+| **Normal** | [`dataset/Normal/`](dataset/Normal/) | 4,414 | JPEG (`.JPG`) | 512 x 512 |
+| **Stone** | [`dataset/stone/`](dataset/stone/) | 5,002 | JPEG (`.JPG`) | 512 x 512 |
+| **Total** | | **9,416** | | |
+
+### Data Preprocessing and Augmentation
+Images are loaded and augmented using Keras `ImageDataGenerator`:
+- **Input Dimensions**: Resized from 512x512 down to $224 \times 224 \times 3$.
+- **Pixel Scaling**: Normalized to the range $[0, 1]$ via `rescale=1./255`.
+- **Validation Split**: 20% held-out validation split (`subset='validation'`), yielding:
+  - **Training Set**: 80% (7,533 images)
+  - **Validation Set**: 20% (1,883 images)
+- **Data Augmentation Parameters** (applied to training subset):
+  - Rotation range: $\pm 20^\circ$
+  - Width shift: $\pm 20\%$
+  - Height shift: $\pm 20\%$
+  - Shear range: 0.2
+  - Zoom range: $\pm 20\%$
+  - Horizontal flip: Enabled
+  - Brightness range: $[0.8, 1.2]$
+
+### Class Imbalance Handling
+To account for the imbalance between stone ($n=5{,}002$) and normal ($n=4{,}414$) images, training utilizes inverse frequency class weights:
+
+$$w_c = \frac{N_{\text{total}}}{2 \cdot N_c}$$
+
+- **Class 0 (Normal)**: $w_0 = \frac{9416}{2 \times 4414} \approx 1.0666$
+- **Class 1 (Stone)**: $w_1 = \frac{9416}{2 \times 5002} \approx 0.9412$
+
+---
+
+## Model Architecture and Training
+
+### Custom Sequential CNN Architecture
+Both models trained by [`training/simple_train.py`](training/simple_train.py) utilize the following 4-block custom Sequential CNN architecture:
+
+| Layer | Type | Specifications / Output Shape | Activation |
+| :---: | :--- | :--- | :---: |
+| 1 | `Conv2D` | 32 filters, $3 \times 3$ kernel, stride 1 | ReLU |
+| 2 | `MaxPooling2D` | Pool size $2 \times 2$, stride 2 | - |
+| 3 | `Conv2D` | 64 filters, $3 \times 3$ kernel, stride 1 | ReLU |
+| 4 | `MaxPooling2D` | Pool size $2 \times 2$, stride 2 | - |
+| 5 | `Conv2D` | 128 filters, $3 \times 3$ kernel, stride 1 | ReLU |
+| 6 | `MaxPooling2D` | Pool size $2 \times 2$, stride 2 | - |
+| 7 | `Conv2D` | 128 filters, $3 \times 3$ kernel, stride 1 | ReLU |
+| 8 | `MaxPooling2D` | Pool size $2 \times 2$, stride 2 | - |
+| 9 | `GlobalAveragePooling2D` | Reduces feature maps to 128-dimensional vector | - |
+| 10 | `Dense` | 512 units | ReLU |
+| 11 | `Dropout` | Rate = 0.5 | - |
+| 12 | `Dense` | 256 units | ReLU |
+| 13 | `Dropout` | Rate = 0.3 | - |
+| 14 | `Dense` | 1 unit | Sigmoid |
+
+> [!NOTE]
+> **Implementation Clarification on Model Naming**:  
+> In [`training/simple_train.py`](training/simple_train.py), the training loop executes across the list `['efficientnet', 'resnet50']` and saves the checkpoints as `final_efficientnet_model.h5` and `final_resnet50_model.h5`. Both output files instantiate the exact same custom 4-block Sequential CNN architecture described above, trained under different random weight initializations. Neither model utilizes standard pretrained architectures (such as torchvision or keras.applications EfficientNet-B0 or ResNet50).
+
+### Training Hyperparameters
+- **Loss Function**: Binary Cross-Entropy (`binary_crossentropy`)
+- **Optimizer**: Adam (`learning_rate=0.001`)
+- **Batch Size**: 32
+- **Epochs**: Up to 25
+- **Callbacks**:
+  - `EarlyStopping`: Monitors validation loss with `patience=7` and `restore_best_weights=True`.
+  - `ReduceLROnPlateau`: Monitors validation loss with reduction `factor=0.5` and `patience=3`.
+
+### Dual-Model Inference Strategy
+During inference in the backend, the image is passed through both loaded models:
+
+$$\hat{p}_{\text{avg}} = \frac{p_{\text{model}_1}(x) + p_{\text{model}_2}(x)}{2}$$
+
+The classification rule is defined as:
+$$\text{Prediction} = \begin{cases} \text{Stone}, & \text{if } \hat{p}_{\text{avg}} > 0.5 \\ \text{Normal}, & \text{otherwise} \end{cases}$$
+
+$$\text{Confidence (\%)} = \begin{cases} \hat{p}_{\text{avg}} \times 100, & \text{if Prediction} = \text{Stone} \\ (1 - \hat{p}_{\text{avg}}) \times 100, & \text{if Prediction} = \text{Normal} \end{cases}$$
+
+If model checkpoints are not found at runtime, the backend enters a fallback demo mode generating mock confidence intervals for testing UI flows.
+
+---
+
+## Explainability (Grad-CAM)
+
+The script [`training/gradcam.py`](training/gradcam.py) implements Gradient-weighted Class Activation Mapping (Grad-CAM) to inspect model attention regions:
+
+1. **Feature Map Extraction**: Dynamically isolates the last 4D convolutional layer (`Conv2D`, 128 filters).
+2. **Gradient Computation**: Uses `tf.GradientTape` to compute gradients of the class prediction score with respect to the feature map activations:
+   $$\alpha_k = \frac{1}{Z} \sum_{i} \sum_{j} \frac{\partial y}{\partial A_{ij}^k}$$
+3. **Heatmap Generation**: Pools gradients across spatial dimensions, weights each channel in the feature map, applies a ReLU threshold to filter negative contributions, and normalizes the output to $[0, 1]$.
+4. **Color Blending**: Resizes the heatmap to match original image dimensions using OpenCV, applies a `cv2.COLORMAP_JET` color transform, and alpha-blends the result ($\alpha = 0.6$) onto the input scan.
+
+> [!IMPORTANT]
+> **Implementation Scope**:  
+> The Grad-CAM logic currently exists as a standalone Python utility in [`training/gradcam.py`](training/gradcam.py). It is not exposed as an active API endpoint in the production Gradio service. The "View Heatmap" button in the frontend is designed to query a `/explain` endpoint, which is not yet wired to the backend inference server.
+
+---
+
+## Repository Structure
 
 ```text
 kidney-stone-ai/
-├── react-frontend/           # React 18 + Vite Progressive Web Application
-│   ├── src/
-│   │   ├── components/       # Header, Sidebar (with folded dock & animated burger), etc.
-│   │   ├── pages/            # Upload (inference & Grad-CAM), About (pipeline architecture)
-│   │   ├── App.jsx           # Application routing & dark mode state
-│   │   └── index.css         # Tactile 3D button styling & responsive layout
-│   ├── package.json          # Dependencies (@gradio/client, Lucide, Tailwind, etc.)
-│   └── vite.config.js        # Vite build configuration
-├── kidney-stone-backend/     # Hugging Face Spaces Serverless Backend
-│   ├── app.py                # Gradio API with @spaces.GPU ZeroGPU decorator
-│   ├── final_efficientnet_model.h5   # Trained EfficientNet-style model (5.1 MB)
-│   ├── final_resnet50_model.h5       # Trained ResNet-style model (5.1 MB)
-│   ├── requirements.txt      # Backend Python dependencies (TensorFlow, Gradio, etc.)
-│   └── README.md             # Spaces configuration metadata
-├── training/                 # Offline Model Training Pipeline
-│   ├── simple_train.py       # Dual CNN training script with class weights & callbacks
-│   └── gradcam.py            # Grad-CAM heatmap extraction module
-├── dataset/                  # Clinical Kidney Imaging Dataset (9,416 images)
-│   ├── Normal/               # 4,414 healthy renal scan images
-│   └── stone/                # 5,002 nephrolithiasis scan images
-├── paper_figures/            # High-resolution (300 DPI) publication figures
-│   ├── system_overview.png
-│   ├── detailed_architecture.png
-│   ├── training_curves.png
+├── dataset/                        # Image dataset
+│   ├── Normal/                     # 4,414 normal renal scans (.JPG)
+│   └── stone/                      # 5,002 kidney stone scans (.JPG)
+├── paper_figures/                  # Architectural diagrams and training figures
 │   ├── class_distribution.png
+│   ├── confidence_hist.png
+│   ├── detailed_architecture.png
 │   ├── gradcam_example.png
-│   └── confidence_hist.png
-├── research_paper.md         # Full IEEE two-column research paper LaTeX source
-├── requirements.txt          # Root Python environment requirements
-└── README.md                 # Project documentation & paper summary
+│   ├── system_overview.png
+│   └── training_curves.png
+├── react-frontend/                 # React 18 + Vite frontend application
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Header.jsx          # Header with theme toggle controls
+│   │   │   └── Sidebar.jsx         # Collapsible sidebar navigation
+│   │   ├── pages/
+│   │   │   ├── About.jsx           # Technical overview and documentation page
+│   │   │   ├── Contact.jsx         # Contact template component
+│   │   │   ├── History.jsx         # History template component
+│   │   │   ├── Home.jsx            # Dashboard template component
+│   │   │   └── Upload.jsx          # File upload, analysis, and report generation
+│   │   ├── App.jsx                 # Routing configuration
+│   │   ├── index.css               # Tailwind styling and custom UI utilities
+│   │   └── main.jsx                # Application root entrypoint
+│   ├── index.html                  # HTML template
+│   ├── package.json                # Frontend dependencies and scripts
+│   ├── tailwind.config.js          # Tailwind CSS design system configuration
+│   └── vite.config.js              # Vite server configuration (port 3000)
+├── training/                       # Offline model development
+│   ├── gradcam.py                  # Grad-CAM heatmap extraction script
+│   └── simple_train.py             # CNN training script with augmentation
+├── .gitignore                      # Git exclusion rules
+├── IEEE_BIC.pdf                    # Compiled PDF draft of the research paper
+├── requirements.txt                # Python dependencies for training and Grad-CAM
+├── research_paper.md               # LaTeX source of research paper
+└── README.md                       # Project documentation
 ```
 
----
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-- **Node.js** $\ge 18.x$ and **npm**
-- **Python** $3.11$ or $3.12$
-- **Git** (with Git LFS for large `.h5` model files)
+*Note on Backend Code: The inference backend is hosted externally on Hugging Face Spaces (`nubruuuu/kidney-stone-backend`). When cloned locally for development, backend files reside in `kidney-stone-backend/` (which is excluded from this repository via `.gitignore`).*
 
 ---
 
-### 2. Running the Frontend Locally
+## Installation and Setup
+
+### Prerequisites
+- **Node.js**: Version 18.x or higher
+- **npm**: Version 9.x or higher
+- **Python**: Version 3.11 or 3.12
+- **Git**
+
+### Clone Repository
 ```bash
-# Navigate to the frontend directory
-cd react-frontend
-
-# Install dependencies
-npm install
-
-# Start Vite local development server
-npm run dev
+git clone https://github.com/subha-3128/kidney-stone-ai.git
+cd kidney-stone-ai
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser. The frontend automatically connects to the live Hugging Face ZeroGPU backend via `@gradio/client` WebSocket tunnelling.
 
 ---
 
-### 3. Running the Backend Locally
+### Frontend Setup
+
+The frontend runs locally and connects directly to the hosted inference service.
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd react-frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open `http://localhost:3000` in your browser.
+
+To build the frontend for production:
 ```bash
-# Navigate to backend directory
-cd kidney-stone-backend
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run Gradio application
-python app.py
-```
-*Note: If local GPU acceleration is unavailable, the backend gracefully falls back to CPU inference or demo mode.*
-
----
-
-### 4. Training the Models Locally
-```bash
-# Navigate to training directory
-cd training
-
-# Ensure TensorFlow is installed with CUDA (recommended)
-pip install tensorflow scikit-learn pillow numpy
-
-# Run the training pipeline
-python simple_train.py
-```
-This trains both $f_1$ and $f_2$ sequentially on `../dataset` with data augmentation, class weighting, `EarlyStopping` (patience = 7), and `ReduceLROnPlateau` (patience = 3), exporting `final_efficientnet_model.h5` and `final_resnet50_model.h5`.
-
----
-
-## ⚙️ Architecture & Deployment Notes
-
-- **ZeroGPU Serverless Acceleration:** The backend leverages Hugging Face Spaces' ZeroGPU tier using the `@spaces.GPU` decorator. An NVIDIA A100 GPU is dynamically leased per inference request and immediately returned, eliminating persistent cloud GPU idle costs.
-- **WebSocket RPC Tunnelling:** Communication between the React frontend and Hugging Face backend uses the official `@gradio/client` WebSocket channel, bypassing standard HTTP CORS preflight checks and connection timeouts.
-- **Explainable Diagnostics:** Grad-CAM activation maps are generated server-side and visualized in the UI with a color-coded attention guide (Red/Orange = high attention calculi focus, Blue = background tissue).
-- **Clinical Report Generator:** Users can generate and download comprehensive diagnostic reports in HTML format containing scan metadata, prediction verdicts, confidence scores, and embedded Grad-CAM overlays.
-
----
-
-## 📖 Citation
-
-If you use KidneyAI Pro, its dual-model ensemble methodology, or the provided dataset in your research, please cite our paper:
-
-```bibtex
-@inproceedings{bepari2026kidneyai,
-  title     = {KidneyAI Pro: An End-to-End Deep Learning Framework for Automated Nephrolithiasis Detection via Dual-Model CNN Ensemble, Grad-CAM Explainability, and ZeroGPU Serverless Deployment},
-  author    = {Bepari, Subhajit and Venthan, Malar and Rajmohan, R.},
-  booktitle = {Proceedings of the IEEE Conference on Computer-Aided Medical Diagnosis},
-  year      = {2026},
-  address   = {Kattankulathur, Chennai, India},
-  publisher = {IEEE}
-}
+npm run build
+npm run preview
 ```
 
 ---
 
-## ⚖️ Clinical Disclaimer
+### Model Training Setup
 
-*KidneyAI Pro is developed for educational, scientific research, and computer-aided detection (CAD) assistance purposes. It is not an FDA/CE-cleared medical device and should not replace clinical judgement, formal radiological interpretation, or biopsy-confirmed diagnosis by qualified healthcare professionals.*
+To retrain the models locally from the dataset:
+
+1. Create and activate a Python virtual environment:
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
+
+2. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. Run the training script:
+   ```bash
+   python training/simple_train.py
+   ```
+
+The script will:
+- Read images from [`dataset/`](dataset/).
+- Compute class weights for `Normal` and `stone`.
+- Train the custom CNN model for two iterations.
+- Save `final_efficientnet_model.h5` and `final_resnet50_model.h5` in the working directory.
+
+---
+
+### Local Inference Backend Setup
+
+If you wish to run the Gradio backend server locally:
+
+1. Obtain the backend script `app.py` and model files (`final_efficientnet_model.h5`, `final_resnet50_model.h5`).
+2. Install backend dependencies:
+   ```bash
+   pip install gradio tensorflow pillow numpy
+   ```
+3. Start the Gradio app:
+   ```bash
+   python app.py
+   ```
+4. Update the client connection in [`react-frontend/src/pages/Upload.jsx`](react-frontend/src/pages/Upload.jsx#L41) to target your local server instance (`http://localhost:7860`) instead of the Hugging Face Space.
+
+---
+
+## Deployment and API Communication
+
+The production application is deployed across two decoupled services:
+
+| Component | Platform | URL |
+| :--- | :--- | :--- |
+| **Frontend Web App** | Vercel | [https://kidney-stone-ai.vercel.app/](https://kidney-stone-ai.vercel.app/) |
+| **Inference Server** | Hugging Face Spaces | [https://huggingface.co/spaces/nubruuuu/kidney-stone-backend](https://huggingface.co/spaces/nubruuuu/kidney-stone-backend) |
+
+### API Communication Details
+- The frontend does not bundle machine learning weights or an embedded Python runtime.
+- Client requests are orchestrated using `@gradio/client`, establishing an RPC channel with the Hugging Face Space.
+- Calls to `client.predict("/predict", { image: imageBlob })` serialize the uploaded scan and transmit it to the server's Gradio predict endpoint, returning the classification label and confidence value.
+
+---
+
+## Limitations and Medical Disclaimer
+
+### Technical Limitations
+- **Evaluation Metrics**: Model performance should be assessed on independent, multi-center clinical validation sets before drawing conclusions regarding generalization across different imaging scanners, protocols, or patient cohorts.
+- **Explainability Integration**: Grad-CAM visualization is currently implemented only as an offline Python module and is not connected to the live web interface.
+- **Architectural Uniformity**: While model checkpoints use distinct filenames, both share the same underlying custom Sequential CNN architecture.
+
+### Medical Disclaimer
+> [!CAUTION]
+> **This software is designed solely for educational, academic, and scientific research purposes.**  
+> - Predictions and confidence scores generated by this system do **not** constitute a clinical diagnosis, prognosis, or medical advice.
+> - The software is **not** an FDA-approved, CE-marked, or clinically certified medical device.
+> - This application must **never** be used as a substitute for professional medical evaluation, clinical radiologist review, or hospital diagnostic procedures.
+> - Patients experiencing abdominal pain, flank pain, hematuria, or other symptoms should immediately seek evaluation from a licensed healthcare practitioner.
