@@ -11,9 +11,21 @@ An open-source deep learning framework and web application for automated binary 
 
 ---
 
+## Project Walkthrough (9:16)
+
+<div align="center">
+  <img src="media/kidney-stone-ai-9x16.webp" alt="KidneyAI Pro 9:16 Project Walkthrough" width="320" />
+  <br />
+  <br />
+  <a href="media/kidney-stone-ai-9x16.mp4">Watch / Download Full 1080×1920 MP4 Video</a>
+</div>
+
+---
+
 ## Table of Contents
 
 - [Live Deployments](#live-deployments)
+- [Project Walkthrough (9:16)](#project-walkthrough-916)
 - [Project Overview](#project-overview)
 - [Key Features](#key-features)
 - [System Architecture](#system-architecture)
@@ -351,6 +363,9 @@ kidney-stone-ai/
 ├── dataset/                        # Image dataset
 │   ├── Normal/                     # 4,414 normal renal scans (.JPG)
 │   └── stone/                      # 5,002 kidney stone scans (.JPG)
+├── media/                          # Rendered 9:16 showcase video and inline preview
+│   ├── kidney-stone-ai-9x16.mp4    # 1080x1920 30fps MP4 rendered via HyperFrames
+│   └── kidney-stone-ai-9x16.webp   # 360x640 animated preview for GitHub README
 ├── paper_figures/                  # Architectural diagrams and training figures
 │   ├── class_distribution.png
 │   ├── confidence_hist.png
@@ -365,10 +380,10 @@ kidney-stone-ai/
 │   │   │   └── Sidebar.jsx         # Collapsible sidebar navigation
 │   │   ├── pages/
 │   │   │   ├── About.jsx           # Technical overview and documentation page
-│   │   │   ├── Contact.jsx         # Contact template component
-│   │   │   ├── History.jsx         # History template component
-│   │   │   ├── Home.jsx            # Dashboard template component
+│   │   │   ├── History.jsx         # Scan history registry and trend charts
 │   │   │   └── Upload.jsx          # File upload, analysis, and report generation
+│   │   ├── utils/
+│   │   │   └── historyStorage.js   # Safe browser storage and thumbnail helper
 │   │   ├── App.jsx                 # Routing configuration
 │   │   ├── index.css               # Tailwind styling and custom UI utilities
 │   │   └── main.jsx                # Application root entrypoint

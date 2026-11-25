@@ -12,27 +12,35 @@ function App() {
     if (saved) return saved === 'dark'
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  // Default collapsed on narrow mobile viewports so content is never crushed
+  const [sidebarOpen, setSidebarOpen] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+  )
 
   useEffect(() => {
     localStorage.setItem('kidneyai_theme', darkMode ? 'dark' : 'light')
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
+    document.documentElement.classList.toggle('dark', darkMode)
   }, [darkMode])
 
   return (
     <Router>
-      <div className="min-h-screen transition-colors duration-200" style={{ backgroundColor: 'var(--bg-app)', color: 'var(--text-main)' }}>
+      <div className="min-h-screen transition-colors duration-200 bg-theme-bg text-theme-text">
         <div className="flex min-h-screen">
+          {/* Mobile backdrop when sidebar drawer is expanded */}
+          {sidebarOpen && (
+            <div
+              className="fixed inset-0 z-30 bg-black/40 md:hidden"
+              onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
+            />
+          )}
+
           <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
           
-          <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'} min-h-screen flex flex-col`}>
-            <Header darkMode={darkMode} setDarkMode={setDarkMode} sidebarOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
+          <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-20 md:ml-64' : 'ml-20'} min-h-screen flex flex-col min-w-0`}>
+            <Header darkMode={darkMode} setDarkMode={setDarkMode} />
             
-            <main className="p-6 sm:p-8 flex-1 max-w-7xl w-full mx-auto">
+            <main className="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
               <Routes>
                 <Route path="/" element={<Upload />} />
                 <Route path="/upload" element={<Upload />} />

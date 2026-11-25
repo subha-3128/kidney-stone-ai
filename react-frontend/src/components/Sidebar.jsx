@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Activity, Calendar, Layers, ShieldCheck, HeartPulse } from 'lucide-react'
+import { Activity, Calendar, Layers, HeartPulse } from 'lucide-react'
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const location = useLocation()

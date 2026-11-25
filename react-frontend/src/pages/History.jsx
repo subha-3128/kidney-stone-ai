@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Calendar, 
   Search, 
-  Filter, 
   Trash2, 
-  Download, 
   Eye, 
-  AlertTriangle, 
-  CheckCircle, 
   Activity, 
-  ArrowRight,
   TrendingUp,
   X,
-  FileText,
-  Clock,
   Sparkles
 } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { loadHistory, saveHistory } from '../utils/historyStorage'
 
 const History = () => {
   const [history, setHistory] = useState([])
@@ -27,18 +20,22 @@ const History = () => {
   const [selectedScan, setSelectedScan] = useState(null)
 
   useEffect(() => {
-    loadHistory()
+    setHistory(loadHistory())
   }, [])
 
-  const loadHistory = () => {
-    const saved = JSON.parse(localStorage.getItem('kidneyai_history') || '[]')
-    setHistory(saved)
-  }
+  useEffect(() => {
+    if (!selectedScan) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setSelectedScan(null)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedScan])
 
   const deleteScan = (id) => {
     const updated = history.filter(item => item.id !== id)
     setHistory(updated)
-    localStorage.setItem('kidneyai_history', JSON.stringify(updated))
+    saveHistory(updated)
     if (selectedScan && selectedScan.id === id) {
       setSelectedScan(null)
     }
@@ -99,16 +96,17 @@ const History = () => {
         previewUrl: '/samples/normal_sample.jpg'
       }
     ]
-    localStorage.setItem('kidneyai_history', JSON.stringify(demoSamples))
+    saveHistory(demoSamples)
     setHistory(demoSamples)
   }
 
   // Filter and search logic
+  const normalizedQuery = searchQuery.toLowerCase()
   const filteredHistory = history.filter(item => {
     const matchesFilter = filterType === 'all' || item.prediction === filterType
     const matchesSearch = 
-      item.imageName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.id.toLowerCase().includes(searchQuery.toLowerCase())
+      (item.imageName || '').toLowerCase().includes(normalizedQuery) ||
+      (item.id || '').toLowerCase().includes(normalizedQuery)
     return matchesFilter && matchesSearch
   })
 
@@ -200,7 +198,7 @@ const History = () => {
                 {stoneScans}
               </div>
               <p className="text-[11px] text-[#5F6C62] dark:text-[#A6B5A9] mt-0.5">
-                {totalScans > 0 ? ((stoneScans / totalScans) * 100).toFixed(0) : 0}% positive rate
+                {((stoneScans / totalScans) * 100).toFixed(0)}% positive rate
               </p>
             </div>
 
@@ -212,7 +210,7 @@ const History = () => {
                 {normalScans}
               </div>
               <p className="text-[11px] text-[#5F6C62] dark:text-[#A6B5A9] mt-0.5">
-                {totalScans > 0 ? ((normalScans / totalScans) * 100).toFixed(0) : 0}% negative rate
+                {((normalScans / totalScans) * 100).toFixed(0)}% negative rate
               </p>
             </div>
 
@@ -434,91 +432,98 @@ const History = () => {
       )}
 
       {/* Inspect Modal Dialog */}
-      <AnimatePresence>
-        {selectedScan && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E1612]/75 dark:bg-black/85 backdrop-blur-md animate-fade-in">
-            <div className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 relative border-[#E4E7E0] dark:border-[#34443A] shadow-2xl">
-              <div className="flex items-center justify-between pb-3 border-b border-[#E4E7E0] dark:border-[#34443A]">
-                <div>
-                  <span className="font-mono text-xs text-[#5F6C62] dark:text-[#A6B5A9]">{selectedScan.id}</span>
-                  <h3 className="text-base font-bold text-[#202923] dark:text-[#E7EEE8]">
-                    Scan Inspection Detail
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setSelectedScan(null)}
-                  className="p-1 rounded-lg hover:bg-[#EDECE6] dark:hover:bg-[#24352A] text-[#5F6C62] dark:text-[#A6B5A9] hover:text-[#202923] dark:hover:text-[#E7EEE8]"
-                >
-                  <X size={18} />
-                </button>
+      {selectedScan && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0E1612]/75 dark:bg-black/85 backdrop-blur-md animate-fade-in"
+          onClick={() => setSelectedScan(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 relative border-[#E4E7E0] dark:border-[#34443A] shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-[#E4E7E0] dark:border-[#34443A]">
+              <div>
+                <span className="font-mono text-xs text-[#5F6C62] dark:text-[#A6B5A9]">{selectedScan.id}</span>
+                <h3 className="text-base font-bold text-[#202923] dark:text-[#E7EEE8]">
+                  Scan Inspection Detail
+                </h3>
               </div>
+              <button
+                onClick={() => setSelectedScan(null)}
+                className="p-1 rounded-lg hover:bg-[#EDECE6] dark:hover:bg-[#24352A] text-[#5F6C62] dark:text-[#A6B5A9] hover:text-[#202923] dark:hover:text-[#E7EEE8]"
+                aria-label="Close modal"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-              <div className="rounded-xl overflow-hidden bg-[#0A0E0C] border border-[#CBD2C6] dark:border-[#34443A] flex items-center justify-center max-h-80">
-                <img
-                  src={selectedScan.previewUrl}
-                  alt={selectedScan.imageName}
-                  className="max-h-72 object-contain"
-                />
+            <div className="rounded-xl overflow-hidden bg-[#0A0E0C] border border-[#CBD2C6] dark:border-[#34443A] flex items-center justify-center max-h-80">
+              <img
+                src={selectedScan.previewUrl}
+                alt={selectedScan.imageName}
+                className="max-h-72 object-contain"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
+                <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Verdict</span>
+                <span className={`font-bold mt-0.5 block ${selectedScan.prediction === 'Stone' ? 'text-[#A45339] dark:text-[#E08B6D]' : 'text-forest dark:text-[#8BB49A]'}`}>
+                  {selectedScan.prediction === 'Stone' ? 'Nephrolithiasis' : 'Negative'}
+                </span>
               </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
-                  <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Verdict</span>
-                  <span className={`font-bold mt-0.5 block ${selectedScan.prediction === 'Stone' ? 'text-[#A45339] dark:text-[#E08B6D]' : 'text-forest dark:text-[#8BB49A]'}`}>
-                    {selectedScan.prediction === 'Stone' ? 'Nephrolithiasis' : 'Negative'}
-                  </span>
-                </div>
-                <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
-                  <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Confidence</span>
-                  <span className="font-bold font-mono mt-0.5 block text-[#202923] dark:text-[#E7EEE8]">
-                    {selectedScan.confidence}%
-                  </span>
-                </div>
-                <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
-                  <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Checkpoint 1</span>
-                  <span className="font-bold font-mono mt-0.5 block text-[#202923] dark:text-[#E7EEE8]">
-                    {selectedScan.model1Prob || selectedScan.confidence}%
-                  </span>
-                </div>
-                <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
-                  <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Checkpoint 2</span>
-                  <span className="font-bold font-mono mt-0.5 block text-[#202923] dark:text-[#E7EEE8]">
-                    {selectedScan.model2Prob || selectedScan.confidence}%
-                  </span>
-                </div>
+              <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
+                <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Confidence</span>
+                <span className="font-bold font-mono mt-0.5 block text-[#202923] dark:text-[#E7EEE8]">
+                  {selectedScan.confidence}%
+                </span>
               </div>
-
-              <div className="p-3 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl text-xs space-y-1.5 border border-[#E4E7E0] dark:border-[#34443A]">
-                <div className="flex justify-between text-[#5F6C62] dark:text-[#A6B5A9]">
-                  <span>File Name:</span>
-                  <span className="font-semibold text-[#202923] dark:text-[#E7EEE8]">{selectedScan.imageName}</span>
-                </div>
-                <div className="flex justify-between text-[#5F6C62] dark:text-[#A6B5A9]">
-                  <span>Timestamp:</span>
-                  <span className="font-semibold text-[#202923] dark:text-[#E7EEE8]">
-                    {new Date(selectedScan.timestamp).toLocaleString()}
-                  </span>
-                </div>
+              <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
+                <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Checkpoint 1</span>
+                <span className="font-bold font-mono mt-0.5 block text-[#202923] dark:text-[#E7EEE8]">
+                  {selectedScan.model1Prob || selectedScan.confidence}%
+                </span>
               </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-[#E4E7E0] dark:border-[#34443A]">
-                <button
-                  onClick={() => deleteScan(selectedScan.id)}
-                  className="btn-secondary text-xs text-[#A45339] dark:text-[#E08B6D] hover:bg-[#FDF3EF] dark:hover:bg-[#2A1E1A]"
-                >
-                  Delete Record
-                </button>
-                <button
-                  onClick={() => setSelectedScan(null)}
-                  className="btn-primary text-xs"
-                >
-                  Close Viewport
-                </button>
+              <div className="p-2.5 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl border border-[#E4E7E0] dark:border-[#34443A]">
+                <span className="text-[10px] text-[#5F6C62] dark:text-[#A6B5A9] uppercase font-bold block">Checkpoint 2</span>
+                <span className="font-bold font-mono mt-0.5 block text-[#202923] dark:text-[#E7EEE8]">
+                  {selectedScan.model2Prob || selectedScan.confidence}%
+                </span>
               </div>
             </div>
+
+            <div className="p-3 bg-[#EDECE6] dark:bg-[#24352A] rounded-xl text-xs space-y-1.5 border border-[#E4E7E0] dark:border-[#34443A]">
+              <div className="flex justify-between text-[#5F6C62] dark:text-[#A6B5A9]">
+                <span>File Name:</span>
+                <span className="font-semibold text-[#202923] dark:text-[#E7EEE8]">{selectedScan.imageName}</span>
+              </div>
+              <div className="flex justify-between text-[#5F6C62] dark:text-[#A6B5A9]">
+                <span>Timestamp:</span>
+                <span className="font-semibold text-[#202923] dark:text-[#E7EEE8]">
+                  {new Date(selectedScan.timestamp).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-[#E4E7E0] dark:border-[#34443A]">
+              <button
+                onClick={() => deleteScan(selectedScan.id)}
+                className="btn-secondary text-xs text-[#A45339] dark:text-[#E08B6D] hover:bg-[#FDF3EF] dark:hover:bg-[#2A1E1A]"
+              >
+                Delete Record
+              </button>
+              <button
+                onClick={() => setSelectedScan(null)}
+                className="btn-primary text-xs"
+              >
+                Close Viewport
+              </button>
+            </div>
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </div>
   )
 }

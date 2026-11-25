@@ -1,7 +1,7 @@
 import React from 'react'
 import { Moon, Sun, Github } from 'lucide-react'
 
-const Header = ({ darkMode, setDarkMode, sidebarOpen, setIsOpen }) => {
+const Header = ({ darkMode, setDarkMode }) => {
   return (
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#17231C]/95 backdrop-blur-md border-b border-[#E4E7E0] dark:border-[#34443A] px-6 py-3.5 transition-colors duration-200">
       <div className="flex items-center justify-between">

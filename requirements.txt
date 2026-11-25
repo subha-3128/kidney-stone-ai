@@ -1,12 +1,4 @@
 tensorflow
-fastapi
-uvicorn
 opencv-python-headless
-gradio
 pillow
 numpy
-scikit-learn
-matplotlib
-seaborn
-python-multipart
-requests

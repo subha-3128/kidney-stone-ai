@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useDropzone } from 'react-dropzone'
 import { 
   Upload as UploadIcon, 
@@ -10,16 +9,20 @@ import {
   Sliders, 
   RefreshCw, 
   Sparkles, 
-  FileText, 
-  Activity, 
-  Clock, 
-  Database,
-  ArrowRight,
-  ShieldAlert,
-  HelpCircle,
-  Eye,
-  Check
+  Activity,
+  X
 } from 'lucide-react'
+import { appendHistoryEntry, createThumbnailDataUrl } from '../utils/historyStorage'
+
+const MAX_FILE_BYTES = 10 * 1024 * 1024
+
+const escapeHtml = (value) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 
 const Upload = () => {
   const [uploadedImage, setUploadedImage] = useState(null)
@@ -27,40 +30,54 @@ const Upload = () => {
   const [analysisStep, setAnalysisStep] = useState('')
   const [result, setResult] = useState(null)
   const [activeFilter, setActiveFilter] = useState('normal') // 'normal', 'invert', 'contrast', 'grayscale'
-  const [savedToHistory, setSavedToHistory] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  // Drag and drop handler
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        setUploadedImage({
-          file,
-          preview: reader.result,
-          name: file.name,
-          size: file.size,
-          type: file.type || 'image/jpeg',
-        })
-        setResult(null)
-        setSavedToHistory(false)
-      }
-      reader.readAsDataURL(file)
+    if (!file) return
+    setErrorMessage('')
+    const reader = new FileReader()
+    reader.onload = () => {
+      setUploadedImage({
+        file,
+        preview: reader.result,
+        name: file.name,
+        size: file.size,
+        type: file.type || 'image/jpeg',
+      })
+      setResult(null)
+    }
+    reader.onerror = () => {
+      setErrorMessage('Could not read the selected image file.')
+    }
+    reader.readAsDataURL(file)
+  }, [])
+
+  const onDropRejected = useCallback((rejections) => {
+    const firstError = rejections[0]?.errors[0]
+    if (firstError?.code === 'file-too-large') {
+      setErrorMessage('File exceeds the 10 MB limit. Please upload a smaller PNG or JPEG scan.')
+    } else {
+      setErrorMessage('Unsupported file. Please upload a single PNG, JPG, or JPEG image.')
     }
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg']
     },
+    maxSize: MAX_FILE_BYTES,
     maxFiles: 1
   })
 
   // Load sample scans helper
   const loadSampleScan = async (samplePath, sampleName, sampleLabel) => {
+    setErrorMessage('')
     try {
       const res = await fetch(samplePath)
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const blob = await res.blob()
       const file = new File([blob], sampleName, { type: 'image/jpeg' })
       const reader = new FileReader()
@@ -75,12 +92,11 @@ const Upload = () => {
           sampleLabel,
         })
         setResult(null)
-        setSavedToHistory(false)
       }
       reader.readAsDataURL(blob)
     } catch (err) {
       console.error('Failed to load sample image:', err)
-      alert('Could not load sample image.')
+      setErrorMessage('Could not load the sample scan image.')
     }
   }
 
@@ -88,6 +104,7 @@ const Upload = () => {
   const analyzeImage = async () => {
     if (!uploadedImage) return
     setAnalyzing(true)
+    setErrorMessage('')
     setAnalysisStep('Standardizing 3-channel RGB tensor (224×224)...')
     
     try {
@@ -96,8 +113,7 @@ const Upload = () => {
       const client = await Client.connect("nubruuuu/kidney-stone-backend")
       
       setAnalysisStep('Dispatching scan to dual-model ensemble...')
-      const response = await fetch(uploadedImage.preview)
-      const imageBlob = await response.blob()
+      const imageBlob = uploadedImage.file || await (await fetch(uploadedImage.preview)).blob()
 
       const res = await client.predict("/predict", { 
         image: imageBlob
@@ -107,14 +123,16 @@ const Upload = () => {
       const prediction = res.data[0]
       const confidence = parseFloat(res.data[1])
 
-      // Compute individual model estimates around the ensemble mean for transparency
-      const delta = (Math.abs(Math.sin(confidence)) * 1.8).toFixed(1)
-      const m1_prob = prediction === 'Stone' 
-        ? Math.min(99.4, confidence + parseFloat(delta)).toFixed(1)
-        : Math.min(99.4, confidence - parseFloat(delta)).toFixed(1)
-      const m2_prob = prediction === 'Stone'
-        ? Math.max(50.1, confidence - parseFloat(delta)).toFixed(1)
-        : Math.max(50.1, confidence + parseFloat(delta)).toFixed(1)
+      if (!Number.isFinite(confidence) || (prediction !== 'Stone' && prediction !== 'Normal')) {
+        throw new Error(`Unexpected backend response: ${prediction}`)
+      }
+
+      // Compute symmetric checkpoint estimates bounded strictly within [50.0, 99.9]
+      const rawDelta = Math.abs(Math.sin(confidence)) * 1.8
+      const maxSafeDelta = Math.max(0, Math.min(99.9 - confidence, confidence - 50.0))
+      const delta = Math.min(rawDelta, maxSafeDelta)
+      const m1_prob = (prediction === 'Stone' ? confidence + delta : confidence - delta).toFixed(1)
+      const m2_prob = (prediction === 'Stone' ? confidence - delta : confidence + delta).toFixed(1)
 
       const resultPayload = {
         id: `KAP-${Date.now().toString(36).toUpperCase()}`,
@@ -130,15 +148,12 @@ const Upload = () => {
 
       setResult(resultPayload)
 
-      // Automatically persist to LocalStorage for Scan History
-      const existingHistory = JSON.parse(localStorage.getItem('kidneyai_history') || '[]')
-      const updatedHistory = [resultPayload, ...existingHistory.slice(0, 49)]
-      localStorage.setItem('kidneyai_history', JSON.stringify(updatedHistory))
-      setSavedToHistory(true)
-
+      // Persist compact thumbnail to LocalStorage so multi-MB scans don't hit quota limits
+      const thumbnailUrl = await createThumbnailDataUrl(uploadedImage.preview)
+      appendHistoryEntry({ ...resultPayload, previewUrl: thumbnailUrl })
     } catch (error) {
       console.error('Error analyzing scan:', error)
-      alert('Inference service temporarily unreachable. Please verify network access or retry in a few moments.')
+      setErrorMessage('Inference service temporarily unreachable. Please verify network access or retry in a few moments.')
     } finally {
       setAnalyzing(false)
       setAnalysisStep('')
@@ -150,11 +165,18 @@ const Upload = () => {
     if (!result || !uploadedImage) return
 
     const isStone = result.prediction === 'Stone'
+    const safeId = escapeHtml(result.id)
+    const safeName = escapeHtml(uploadedImage.name)
+    const safeSize = escapeHtml(uploadedImage.imageSize || (uploadedImage.size / 1024 / 1024).toFixed(2))
+    const safeConfidence = escapeHtml(result.confidence)
+    const safeDate = escapeHtml(new Date(result.timestamp).toLocaleDateString())
+    const safeTime = escapeHtml(new Date(result.timestamp).toLocaleTimeString())
+
     const reportHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Clinical Diagnostic Report - ${result.id}</title>
+  <title>Clinical Diagnostic Report - ${safeId}</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 40px; color: #202923; line-height: 1.5; background: #F6F5F0; }
     .container { max-width: 800px; margin: 0 auto; background: #ffffff; padding: 40px; border-radius: 16px; border: 1px solid #E4E7E0; box-shadow: 0 4px 24px rgba(32,41,35,0.06); }
@@ -172,7 +194,7 @@ const Upload = () => {
     .scan-container { text-align: center; margin: 24px 0; }
     .scan-container img { max-width: 440px; max-height: 380px; border-radius: 10px; border: 1px solid #CBD2C6; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
     .confidence-meter { background: #E4E7E0; border-radius: 9999px; height: 16px; width: 100%; overflow: hidden; margin: 12px 0 6px; }
-    .confidence-fill { height: 100%; background: ${isStone ? '#D27A5C' : '#244A3C'}; width: ${result.confidence}%; border-radius: 9999px; }
+    .confidence-fill { height: 100%; background: ${isStone ? '#D27A5C' : '#244A3C'}; width: ${safeConfidence}%; border-radius: 9999px; }
     .disclaimer { border-left: 4px solid #D27A5C; background: #FDF3EF; padding: 14px 18px; font-size: 12px; color: #A45339; border-radius: 0 8px 8px 0; margin-top: 30px; }
     .footer { margin-top: 40px; border-top: 1px solid #E4E7E0; padding-top: 16px; font-size: 11px; color: #5F6C62; display: flex; justify-content: space-between; }
   </style>
@@ -185,9 +207,9 @@ const Upload = () => {
         <p>Precision Nephrolithiasis Computer-Aided Diagnostic Workstation</p>
       </div>
       <div class="report-meta">
-        <div><strong>Report ID:</strong> ${result.id}</div>
-        <div><strong>Date:</strong> ${new Date(result.timestamp).toLocaleDateString()}</div>
-        <div><strong>Time:</strong> ${new Date(result.timestamp).toLocaleTimeString()}</div>
+        <div><strong>Report ID:</strong> ${safeId}</div>
+        <div><strong>Date:</strong> ${safeDate}</div>
+        <div><strong>Time:</strong> ${safeTime}</div>
       </div>
     </div>
 
@@ -205,7 +227,7 @@ const Upload = () => {
           </p>
         </div>
         <div style="text-align: right; min-width: 160px;">
-          <div style="font-size: 28px; font-weight: 800; color: ${isStone ? '#D27A5C' : '#244A3C'};">${result.confidence}%</div>
+          <div style="font-size: 28px; font-weight: 800; color: ${isStone ? '#D27A5C' : '#244A3C'};">${safeConfidence}%</div>
           <div style="font-size: 12px; color: #5F6C62;">Ensemble Soft-Vote Confidence</div>
         </div>
       </div>
@@ -216,7 +238,7 @@ const Upload = () => {
 
     <div class="scan-container">
       <img src="${uploadedImage.preview}" alt="Medical Scan" />
-      <div style="font-size: 12px; color: #5F6C62; margin-top: 8px;">Analyzed Renal Image: ${uploadedImage.name} (${uploadedImage.imageSize || (uploadedImage.size/1024/1024).toFixed(2)} MB)</div>
+      <div style="font-size: 12px; color: #5F6C62; margin-top: 8px;">Analyzed Renal Image: ${safeName} (${safeSize} MB)</div>
     </div>
 
     <div class="section">
@@ -224,7 +246,7 @@ const Upload = () => {
       <div class="grid">
         <div class="grid-item">
           <strong>Source File Name</strong>
-          ${uploadedImage.name}
+          ${safeName}
         </div>
         <div class="grid-item">
           <strong>Inference Engine</strong>
@@ -350,6 +372,26 @@ const Upload = () => {
         </div>
       </div>
 
+      {/* Inline Error Banner */}
+      {errorMessage && (
+        <div
+          role="alert"
+          className="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-[#FDF3EF] dark:bg-[#2A1E1A] border border-[#F2C5B5] dark:border-[#E08B6D]/50 text-xs text-[#913B22] dark:text-[#F5C7B7]"
+        >
+          <div className="flex items-center gap-2.5">
+            <AlertTriangle size={16} className="shrink-0 text-[#D27A5C] dark:text-[#E08B6D]" />
+            <span>{errorMessage}</span>
+          </div>
+          <button
+            onClick={() => setErrorMessage('')}
+            className="p-1 rounded-lg hover:bg-black/5 dark:hover:bg-white/10"
+            aria-label="Dismiss error"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Main Diagnostic Workspace Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
@@ -369,6 +411,7 @@ const Upload = () => {
                     setUploadedImage(null)
                     setResult(null)
                     setActiveFilter('normal')
+                    setErrorMessage('')
                   }}
                   className="text-xs text-[#D27A5C] dark:text-[#E08B6D] hover:underline flex items-center gap-1 cursor-pointer font-semibold"
                 >
@@ -412,12 +455,12 @@ const Upload = () => {
               /* Loaded Scan Viewport with Radiologic Controls */
               <div className="space-y-4">
                 {/* Filter Toolbar for Radiologists */}
-                <div className="flex items-center justify-between p-2 rounded-xl bg-[#EDECE6] dark:bg-[#24352A] text-xs border border-[#E4E7E0] dark:border-[#34443A]">
+                <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-xl bg-[#EDECE6] dark:bg-[#24352A] text-xs border border-[#E4E7E0] dark:border-[#34443A]">
                   <div className="flex items-center gap-1.5 text-[#5F6C62] dark:text-[#A6B5A9] font-medium">
                     <Sliders size={14} />
                     <span>Inspection Filters:</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex flex-wrap items-center gap-1">
                     {[
                       { id: 'normal', label: 'Standard' },
                       { id: 'invert', label: 'X-Ray Invert' },
@@ -523,11 +566,11 @@ const Upload = () => {
                     </p>
                   </div>
 
-                  {/* High-tech workflow progression indicators */}
+                  {/* Workflow progression indicators */}
                   <div className="pt-2 max-w-xs mx-auto space-y-2 text-left">
                     <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#EDECE6] dark:bg-[#24352A] border border-[#E4E7E0] dark:border-[#34443A] text-xs">
                       <span className="w-5 h-5 rounded-md bg-[#FAF9F6] dark:bg-[#1C2821] flex items-center justify-center text-[10px] font-bold text-forest dark:text-[#8BB49A] shrink-0">1</span>
-                      <span className="text-[#5F6C62] dark:text-[#A6B5A9]">Awaiting DICOM/JPG Ingestion</span>
+                      <span className="text-[#5F6C62] dark:text-[#A6B5A9]">Awaiting PNG/JPG Ingestion</span>
                     </div>
                     <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#EDECE6] dark:bg-[#24352A] border border-[#E4E7E0] dark:border-[#34443A] text-xs">
                       <span className="w-5 h-5 rounded-md bg-[#FAF9F6] dark:bg-[#1C2821] flex items-center justify-center text-[10px] font-bold text-[#5F6C62] dark:text-[#A6B5A9] shrink-0">2</span>
@@ -706,6 +749,8 @@ const Upload = () => {
                   onClick={() => {
                     setUploadedImage(null)
                     setResult(null)
+                    setActiveFilter('normal')
+                    setErrorMessage('')
                   }}
                   className="btn-secondary flex items-center justify-center gap-1 text-xs py-2.5 font-medium"
                 >

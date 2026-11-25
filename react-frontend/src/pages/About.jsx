@@ -1,5 +1,4 @@
 import React from 'react'
-import { motion } from 'framer-motion'
 import { 
   Layers, 
   Cpu, 
@@ -7,11 +6,7 @@ import {
   Zap, 
   ShieldAlert, 
   Eye, 
-  Activity, 
   GitBranch, 
-  CheckCircle,
-  FileCode,
-  Sliders,
   ExternalLink
 } from 'lucide-react'
 
