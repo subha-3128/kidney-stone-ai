@@ -4,130 +4,80 @@
 
 @layer base {
   * {
-    @apply border-border-color;
+    @apply border-border-color dark:border-border-color-dark;
   }
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
   html, body, #root {
-    @apply bg-slate-50 dark:bg-slate-950 text-text-primary dark:text-slate-100 font-sans min-h-screen antialiased;
+    @apply bg-background dark:bg-background-dark text-text-primary dark:text-text-primary-dark font-sans min-h-screen antialiased;
     overflow-x: hidden;
   }
 }
 
 @layer components {
-  /* Tactile 3D Primary Button with Mechanical Spring Animation */
-  .btn-primary {
-    @apply bg-primary text-white px-6 py-3 rounded-xl font-semibold inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed select-none;
-    box-shadow: 0 4px 0 #1565C0, 0 8px 16px -2px rgba(30, 136, 229, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  
-  .btn-primary:hover:not(:disabled) {
-    background-color: #1976D2;
-    transform: translateY(-1.5px);
-    box-shadow: 0 5px 0 #1565C0, 0 12px 20px -2px rgba(30, 136, 229, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  }
-
-  .btn-primary:active:not(:disabled) {
-    transform: translateY(2px);
-    box-shadow: 0 1px 0 #1565C0, 0 3px 6px rgba(30, 136, 229, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  }
-  
-  /* Tactile 3D Secondary Button with Smooth Press Animation */
-  .btn-secondary {
-    @apply bg-surface dark:bg-slate-800 text-text-primary dark:text-slate-100 px-6 py-3 rounded-xl font-semibold border border-border-color dark:border-slate-700 inline-flex items-center justify-center gap-2 cursor-pointer select-none;
-    box-shadow: 0 3px 0 #CBD5E1, 0 6px 12px -2px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .dark .btn-secondary {
-    box-shadow: 0 3px 0 #334155, 0 6px 14px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-
-  .btn-secondary:hover {
-    background-color: #F8FAFC;
-    transform: translateY(-1.5px);
-    box-shadow: 0 4px 0 #CBD5E1, 0 8px 16px -2px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  }
-
-  .dark .btn-secondary:hover {
-    background-color: #1E293B;
-    box-shadow: 0 4px 0 #334155, 0 8px 18px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  }
-
-  .btn-secondary:active {
-    transform: translateY(1.5px);
-    box-shadow: 0 1px 0 #CBD5E1, 0 2px 4px rgba(0, 0, 0, 0.04);
-  }
-
-  .dark .btn-secondary:active {
-    box-shadow: 0 1px 0 #334155, 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Precision 3D Elevated Card */
+  /* Modern Clinical Card */
   .card {
-    @apply bg-surface dark:bg-slate-900 rounded-2xl border border-border-color dark:border-slate-800 p-6;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -2px rgba(15, 23, 42, 0.06), 0 16px 32px -4px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 1);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .dark .card {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 16px -2px rgba(0, 0, 0, 0.6), 0 20px 40px -6px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 12px 24px -4px rgba(15, 23, 42, 0.1), 0 24px 48px -6px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 1);
-  }
-
-  .dark .card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), 0 14px 28px -4px rgba(0, 0, 0, 0.7), 0 28px 56px -6px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    @apply bg-surface dark:bg-surface-dark rounded-2xl border border-border-color dark:border-border-color-dark p-6 transition-all duration-200 shadow-clinical;
   }
   
-  /* Sidebar Item with Smooth Hover Animation */
-  .sidebar-item {
-    @apply flex items-center text-text-primary dark:text-slate-300 font-medium cursor-pointer;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  .card-hover {
+    @apply card hover:shadow-clinical-lg hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-0.5;
   }
 
-  .sidebar-item:hover {
-    @apply bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white;
-  }
-  
-  .sidebar-item.active {
-    @apply bg-primary text-white font-semibold;
-    box-shadow: 0 4px 12px rgba(30, 136, 229, 0.35);
+  /* Refined Primary Action Button */
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-glow-primary active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none select-none text-sm;
   }
 
-  .sidebar-item.active:hover {
-    background-color: #1976D2;
+  /* Clean Secondary Outlined Button */
+  .btn-secondary {
+    @apply bg-surface dark:bg-surface-elevatedDark text-text-primary dark:text-text-primary-dark hover:bg-slate-100 dark:hover:bg-slate-800 border border-border-color dark:border-border-color-dark px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-[0.98] select-none text-sm;
   }
-}
 
-/* 3D Depth on Dropzone Area */
-[class*="border-dashed"] {
-  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.04);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
+  /* Clinical Danger / Alert Button */
+  .btn-danger {
+    @apply bg-danger hover:bg-danger-hover text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-glow-danger active:scale-[0.98] select-none text-sm;
+  }
 
-[class*="border-dashed"]:hover {
-  transform: scale(1.008);
-}
+  /* Badge Styles */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide uppercase select-none;
+  }
 
-/* 3D Depth on Circular Progress Gauge */
-svg.transform.-rotate-90 {
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.12));
-}
+  .badge-primary {
+    @apply badge bg-primary-subtle dark:bg-primary-darkSubtle text-primary dark:text-sky-300 border border-primary/20;
+  }
 
-.dark svg.transform.-rotate-90 {
-  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.55));
-}
+  .badge-danger {
+    @apply badge bg-danger-subtle dark:bg-danger-darkSubtle text-danger dark:text-rose-300 border border-danger/30;
+  }
 
-/* Result Alert Box Elevation */
-div[class*="bg-danger/10"], div[class*="bg-secondary/10"] {
-  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
+  .badge-success {
+    @apply badge bg-success-subtle dark:bg-success-darkSubtle text-success dark:text-emerald-300 border border-success/30;
+  }
+
+  .badge-neutral {
+    @apply badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700;
+  }
+
+  /* Radiologic Inspection Viewport Filters */
+  .filter-normal {
+    filter: none;
+  }
+
+  .filter-invert {
+    filter: invert(1) contrast(1.15) brightness(0.95);
+  }
+
+  .filter-contrast {
+    filter: contrast(1.7) brightness(1.08);
+  }
+
+  .filter-grayscale {
+    filter: grayscale(1) contrast(1.35) brightness(1.02);
+  }
 }
 
 /* Subtle Modern Scrollbar */
@@ -142,13 +92,9 @@ div[class*="bg-danger/10"], div[class*="bg-secondary/10"] {
   @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600;
 }
 
-/* Responsive Polish across Screen Sizes */
-@media (max-width: 768px) {
-  .card {
-    padding: 1.25rem;
-  }
-  .btn-primary, .btn-secondary {
-    padding: 0.625rem 1.125rem;
-    font-size: 0.875rem;
-  }
+/* Precision Circular Progress Gauge Drop Shadow */
+svg circle.stroke-primary,
+svg circle.stroke-danger,
+svg circle.stroke-success {
+  transition: stroke-dashoffset 1s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.3s ease;
 }
