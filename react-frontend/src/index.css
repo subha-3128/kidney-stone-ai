@@ -5,22 +5,23 @@
 @layer base {
   :root {
     /* Theme 1: Light Mode – Sage Clinical */
-    --bg-app: #F6F5F0;             /* Warm Ivory */
-    --bg-card: #FFFFFF;            /* Cards */
-    --bg-elevated: #EDECE6;        /* Warm Ivory Sub-surface */
+    --bg-app: #F6F5F0;             /* Warm Ivory Background */
+    --bg-sidebar: #FFFFFF;         /* Crisp White Sidebar */
+    --bg-card: #FFFFFF;            /* White Cards */
+    --bg-elevated: #EDECE6;        /* Warm Ivory Elevated Inner Surfaces */
     --bg-panel: #FAF9F6;           /* Subtle Panel */
     --primary: #244A3C;            /* Forest Green */
-    --primary-hover: #1C3A2F;
+    --primary-hover: #1A362B;
     --primary-subtle: #EBF1EE;
     --secondary: #7A9B86;          /* Sage Green */
-    --secondary-hover: #658470;
+    --secondary-hover: #63846E;
     --secondary-subtle: #EDF3EF;
     --accent: #D27A5C;             /* Terracotta */
-    --accent-hover: #BD6649;
+    --accent-hover: #BE674A;
     --accent-subtle: #FBECE7;
     --text-main: #202923;          /* Charcoal */
-    --text-muted: #758078;         /* Muted Text */
-    --border-color: #E4E7E0;       /* Borders */
+    --text-muted: #5F6C62;         /* High-contrast readable Muted */
+    --border-color: #E4E7E0;       /* Crisp Border */
     --border-color-hover: #CBD2C6;
     --success: #244A3C;            /* Forest Green for negative / normal */
     --success-subtle: #EBF1EE;
@@ -30,12 +31,13 @@
 
   .dark {
     /* Theme 2: Dark Mode – Dark Emerald */
-    --bg-app: #131B17;             /* Dark Emerald Background */
-    --bg-card: #1C2821;            /* Dark Emerald Cards */
-    --bg-elevated: #23322A;        /* Elevated Inner Panels */
-    --bg-panel: #17221C;           /* Dark Emerald Panel */
-    --primary: #8BB49A;            /* Primary Mint / Light Emerald */
-    --primary-hover: #A0C6AF;
+    --bg-app: #131B17;             /* Main background */
+    --bg-sidebar: #17231C;         /* Sidebar */
+    --bg-card: #1C2821;            /* Cards */
+    --bg-elevated: #24352A;        /* Elevated surfaces */
+    --bg-panel: #17231C;           /* Header & Panels */
+    --primary: #8BB49A;            /* Primary Light Emerald */
+    --primary-hover: #A2C8AF;
     --primary-subtle: rgba(139, 180, 154, 0.16);
     --secondary: #7A9B86;          /* Sage Green */
     --secondary-hover: #91B09C;
@@ -43,14 +45,14 @@
     --accent: #E08B6D;             /* Accent Terracotta */
     --accent-hover: #E89E84;
     --accent-subtle: rgba(224, 139, 109, 0.18);
-    --text-main: #E7EEE8;          /* Main Soft Light Text */
-    --text-muted: #8FA295;         /* Muted Text */
-    --border-color: #34443A;       /* Dark Emerald Borders */
+    --text-main: #E7EEE8;          /* Main text */
+    --text-muted: #A6B5A9;         /* Secondary text */
+    --border-color: #34443A;       /* Borders */
     --border-color-hover: #4A5F52;
     --success: #8BB49A;            /* Light Emerald */
-    --success-subtle: rgba(139, 180, 154, 0.16);
+    --success-subtle: #192720;
     --danger: #E08B6D;             /* Terracotta */
-    --danger-subtle: rgba(224, 139, 109, 0.18);
+    --danger-subtle: #2A1E1A;
   }
 
   * {
@@ -73,18 +75,20 @@
 }
 
 @layer components {
-  /* Cohesive Cards */
+  /* Distinct Cards with Elevation & Hierarchy */
   .card {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 1rem;
     padding: 1.5rem;
     transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 20px -2px rgba(32, 41, 35, 0.05);
+    box-shadow: 0 2px 12px -2px rgba(19, 27, 23, 0.05);
   }
 
   .dark .card {
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    background-color: #1C2821;
+    border: 1px solid #34443A;
+    box-shadow: 0 6px 24px -2px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
   
   .card-hover {
@@ -93,13 +97,14 @@
   .card-hover:hover {
     border-color: var(--border-color-hover);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px -4px rgba(32, 41, 35, 0.09);
+    box-shadow: 0 10px 28px -4px rgba(19, 27, 23, 0.09);
   }
   .dark .card-hover:hover {
-    box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.55);
+    border-color: #4A5F52;
+    box-shadow: 0 10px 32px 0 rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 
-  /* Forest Green / Light Emerald Primary Action Button */
+  /* High-Contrast Primary Action Button */
   .btn-primary {
     background-color: var(--primary);
     color: #FFFFFF;
@@ -115,11 +120,12 @@
     transition: all 0.2s ease-in-out;
     user-select: none;
     border: 1px solid transparent;
-    box-shadow: 0 2px 8px -1px rgba(36, 74, 60, 0.3);
+    box-shadow: 0 2px 8px -1px rgba(36, 74, 60, 0.35);
   }
   .btn-primary:hover {
     background-color: var(--primary-hover);
-    box-shadow: 0 4px 14px -1px rgba(36, 74, 60, 0.4);
+    box-shadow: 0 4px 14px -1px rgba(36, 74, 60, 0.45);
+    transform: translateY(-1px);
   }
   .btn-primary:active {
     transform: scale(0.98);
@@ -128,18 +134,23 @@
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;
+    transform: none;
   }
+  
+  /* In dark mode: Light Emerald background with crisp dark charcoal text for supreme contrast */
   .dark .btn-primary {
-    background-color: var(--primary);
-    color: #131B17;
+    background-color: #8BB49A;
+    color: #0E1612;
+    font-weight: 700;
     box-shadow: 0 2px 10px -1px rgba(139, 180, 154, 0.3);
   }
   .dark .btn-primary:hover {
-    background-color: var(--primary-hover);
-    box-shadow: 0 4px 16px -1px rgba(139, 180, 154, 0.45);
+    background-color: #A2C8AF;
+    box-shadow: 0 4px 18px -1px rgba(139, 180, 154, 0.45);
+    transform: translateY(-1px);
   }
 
-  /* Refined Secondary Button */
+  /* Refined Secondary Surface Button */
   .btn-secondary {
     background-color: var(--bg-card);
     color: var(--text-main);
@@ -155,7 +166,7 @@
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     user-select: none;
-    box-shadow: 0 1px 3px 0 rgba(32, 41, 35, 0.04);
+    box-shadow: 0 1px 3px 0 rgba(19, 27, 23, 0.04);
   }
   .btn-secondary:hover {
     background-color: var(--bg-elevated);
@@ -163,6 +174,15 @@
   }
   .btn-secondary:active {
     transform: scale(0.98);
+  }
+  .dark .btn-secondary {
+    background-color: #24352A;
+    color: #E7EEE8;
+    border: 1px solid #34443A;
+  }
+  .dark .btn-secondary:hover {
+    background-color: #2D4234;
+    border-color: #4A5F52;
   }
 
   /* Terracotta Accent Button */
@@ -184,17 +204,27 @@
   }
   .btn-accent:hover {
     background-color: var(--accent-hover);
+    transform: translateY(-1px);
   }
   .btn-accent:active {
     transform: scale(0.98);
   }
+  .dark .btn-accent {
+    background-color: #E08B6D;
+    color: #0E1612;
+    font-weight: 700;
+    box-shadow: 0 2px 10px -1px rgba(224, 139, 109, 0.35);
+  }
+  .dark .btn-accent:hover {
+    background-color: #E89E84;
+  }
 
-  /* Badges */
+  /* Badges with Sharp Contrast & Tonal Integrity */
   .badge {
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    padding: 0.2rem 0.65rem;
+    padding: 0.22rem 0.65rem;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
@@ -203,37 +233,48 @@
   }
 
   .badge-primary {
-    background-color: var(--primary-subtle);
-    color: var(--primary);
-    border: 1px solid var(--primary);
+    background-color: #EBF1EE;
+    color: #244A3C;
+    border: 1px solid #C2D9CD;
   }
   .dark .badge-primary {
-    border-color: rgba(139, 180, 154, 0.4);
+    background-color: #24352A;
+    color: #8BB49A;
+    border: 1px solid #34443A;
   }
 
   .badge-accent,
   .badge-danger {
-    background-color: var(--danger-subtle);
-    color: var(--danger);
-    border: 1px solid var(--danger);
+    background-color: #FDF3EF;
+    color: #A45339;
+    border: 1px solid #F7D7CC;
   }
   .dark .badge-danger {
-    border-color: rgba(224, 139, 109, 0.4);
+    background-color: #2A1E1A;
+    color: #E08B6D;
+    border: 1px solid rgba(224, 139, 109, 0.45);
   }
 
   .badge-success {
-    background-color: var(--success-subtle);
-    color: var(--success);
-    border: 1px solid var(--success);
+    background-color: #EDF4F0;
+    color: #1B3B2F;
+    border: 1px solid #BED7CA;
   }
   .dark .badge-success {
-    border-color: rgba(139, 180, 154, 0.4);
+    background-color: #192720;
+    color: #8BB49A;
+    border: 1px solid rgba(139, 180, 154, 0.45);
   }
 
   .badge-neutral {
-    background-color: var(--bg-elevated);
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
+    background-color: #EDECE6;
+    color: #5F6C62;
+    border: 1px solid #E4E7E0;
+  }
+  .dark .badge-neutral {
+    background-color: #24352A;
+    color: #A6B5A9;
+    border: 1px solid #34443A;
   }
 
   /* Radiologic Inspection Viewport Filters */
