@@ -311,23 +311,21 @@ const Upload = () => {
     <div className="space-y-6">
       {/* Top Banner: Clinical Modality & Sample Presets */}
       <div className="card bg-gradient-to-r from-blue-50/70 via-indigo-50/40 to-slate-50 dark:from-blue-950/20 dark:via-indigo-950/20 dark:to-surface-dark border-blue-100/80 dark:border-white/[0.08]">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="badge-primary">Diagnostic Studio</span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">Supported Modalities: Ultrasound &amp; CT</span>
-            </div>
-            <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Automated Nephrolithiasis Classification
-            </h2>
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
-              Upload a renal cross-sectional scan or select an evaluated clinical preset to test the dual-model ensemble.
-            </p>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="badge-primary">Diagnostic Studio</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">Supported Modalities: Ultrasound &amp; CT</span>
           </div>
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Automated Nephrolithiasis Classification
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+            Upload a renal cross-sectional scan or select an evaluated clinical preset to test the dual-model ensemble.
+          </p>
 
           {/* Quick Demo Test Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-1 hidden sm:inline">
+          <div className="flex flex-wrap items-center gap-2.5 mt-3.5 pt-3 border-t border-slate-200/60 dark:border-white/[0.06]">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mr-0.5">
               Preset Scans:
             </span>
             <button
