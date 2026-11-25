@@ -15,34 +15,34 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
     <aside
       className={`fixed inset-y-0 left-0 z-40 ${
         isOpen ? 'w-64' : 'w-20'
-      } bg-surface dark:bg-surface-dark border-r border-border-color dark:border-border-color-dark shadow-sm transition-all duration-300 ease-in-out flex flex-col justify-between select-none`}
+      } bg-white dark:bg-surface-panelDark border-r border-slate-200/90 dark:border-white/[0.08] transition-all duration-300 ease-in-out flex flex-col justify-between select-none shadow-subtle`}
     >
       <div>
         {/* Brand Header */}
-        <div className={`flex items-center ${isOpen ? 'justify-between px-5' : 'justify-center px-3'} py-4 border-b border-border-color dark:border-border-color-dark min-h-[69px]`}>
+        <div className={`flex items-center ${isOpen ? 'justify-between px-5' : 'justify-center px-3'} py-4 border-b border-slate-200/90 dark:border-white/[0.08] min-h-[69px]`}>
           {isOpen ? (
             <Link to="/" className="flex items-center gap-3 overflow-hidden group">
-              <div className="w-9 h-9 bg-gradient-to-tr from-primary to-sky-400 rounded-xl flex items-center justify-center shrink-0 shadow-sm shadow-primary/30 text-white font-bold">
-                <HeartPulse size={20} className="animate-pulse" />
+              <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/25 text-white font-bold">
+                <HeartPulse size={19} className="animate-pulse" />
               </div>
               <div className="whitespace-nowrap overflow-hidden">
-                <span className="font-bold text-sm tracking-tight text-text-primary dark:text-text-primary-dark leading-tight block">
+                <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white leading-tight block">
                   KidneyAI Studio
                 </span>
-                <span className="text-[11px] text-text-secondary dark:text-text-secondary-dark block">
-                  Clinical CAD Engine
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 block font-medium">
+                  Precision CAD Engine
                 </span>
               </div>
             </Link>
           ) : (
-            <Link to="/" className="w-9 h-9 bg-gradient-to-tr from-primary to-sky-400 rounded-xl flex items-center justify-center shrink-0 shadow-sm shadow-primary/30 text-white font-bold">
-              <HeartPulse size={20} />
+            <Link to="/" className="w-9 h-9 bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 rounded-xl flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/25 text-white font-bold">
+              <HeartPulse size={19} />
             </Link>
           )}
           
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
             aria-label={isOpen ? "Collapse navigation" : "Expand navigation"}
             title={isOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
@@ -84,11 +84,11 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
                     : 'justify-center w-11 h-11 p-0 rounded-xl mx-auto'
                 } transition-all duration-150 font-medium text-sm ${
                   isActive 
-                    ? 'bg-primary text-white shadow-sm shadow-primary/25 font-semibold' 
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 text-white shadow-md shadow-blue-600/25 font-semibold' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100/90 dark:hover:bg-white/[0.06] hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                <Icon size={19} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-primary dark:text-slate-400 transition-colors'}`} />
+                <Icon size={18} className={`shrink-0 ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors'}`} />
                 {isOpen && (
                   <span className="whitespace-nowrap overflow-hidden">
                     {item.label}
@@ -108,25 +108,25 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
       </div>
 
       {/* Footer System Status Card */}
-      <div className="p-3 border-t border-border-color dark:border-border-color-dark">
+      <div className="p-3 border-t border-slate-200/90 dark:border-white/[0.08]">
         {isOpen ? (
-          <div className="bg-slate-50 dark:bg-slate-850 rounded-xl p-3 border border-border-color dark:border-border-color-dark">
+          <div className="bg-slate-50 dark:bg-surface-elevatedDark rounded-xl p-3 border border-slate-200/80 dark:border-white/[0.08]">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] font-semibold text-text-secondary dark:text-text-secondary-dark uppercase tracking-wider">
-                Inference System
+              <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Inference Cluster
               </span>
-              <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50 animate-pulse"></span>
             </div>
-            <p className="text-xs font-medium text-text-primary dark:text-text-primary-dark">
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
               Dual Checkpoint Soft-Vote
             </p>
-            <p className="text-[10px] text-text-secondary dark:text-text-secondary-dark mt-0.5">
-              Input: 224×224 RGB Tensor
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
+              224×224 RGB &bull; Sigmoid Mean
             </p>
           </div>
         ) : (
           <div className="flex justify-center py-2" title="Dual Checkpoint Soft-Vote Online">
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40 flex items-center justify-center">
               <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
             </div>
           </div>

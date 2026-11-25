@@ -138,14 +138,14 @@ const History = () => {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="badge-primary">Audit Registry</span>
-            <span className="text-xs text-text-secondary dark:text-text-secondary-dark">
-              Local Session Storage
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Local Browser Session
             </span>
           </div>
-          <h2 className="text-xl font-bold tracking-tight text-text-primary dark:text-text-primary-dark">
+          <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             Diagnostic Scan History
           </h2>
-          <p className="text-sm text-text-secondary dark:text-text-secondary-dark mt-0.5">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
             Audit trail of processed renal scans, ensemble soft-vote confidence, and clinical classification reports.
           </p>
         </div>
@@ -156,13 +156,13 @@ const History = () => {
               onClick={seedSampleHistory}
               className="btn-secondary text-xs flex items-center gap-1.5"
             >
-              <Sparkles size={14} className="text-primary" />
+              <Sparkles size={14} className="text-blue-500" />
               <span>Load Sample History</span>
             </button>
           ) : (
             <button
               onClick={clearAllHistory}
-              className="btn-secondary text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 flex items-center gap-1.5"
+              className="btn-secondary text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 flex items-center gap-1.5"
             >
               <Trash2 size={14} />
               <span>Clear History</span>
@@ -181,49 +181,49 @@ const History = () => {
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="card p-4">
-              <span className="text-xs font-semibold text-text-secondary dark:text-text-secondary-dark uppercase tracking-wider block">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                 Total Scans
               </span>
-              <div className="text-2xl font-bold mt-1 text-text-primary dark:text-text-primary-dark">
+              <div className="text-2xl font-bold mt-1 text-slate-900 dark:text-white">
                 {totalScans}
               </div>
-              <p className="text-[11px] text-text-secondary dark:text-text-secondary-dark mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Processed in this browser
               </p>
             </div>
 
-            <div className="card p-4 border-rose-100 dark:border-rose-900/30">
+            <div className="card p-4 border-rose-200/70 dark:border-rose-900/40">
               <span className="text-xs font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider block">
                 Stones Detected
               </span>
               <div className="text-2xl font-bold mt-1 text-rose-600 dark:text-rose-400">
                 {stoneScans}
               </div>
-              <p className="text-[11px] text-text-secondary dark:text-text-secondary-dark mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 {totalScans > 0 ? ((stoneScans / totalScans) * 100).toFixed(0) : 0}% positive rate
               </p>
             </div>
 
-            <div className="card p-4 border-emerald-100 dark:border-emerald-900/30">
+            <div className="card p-4 border-emerald-200/70 dark:border-emerald-900/40">
               <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider block">
                 Unremarkable
               </span>
               <div className="text-2xl font-bold mt-1 text-emerald-600 dark:text-emerald-400">
                 {normalScans}
               </div>
-              <p className="text-[11px] text-text-secondary dark:text-text-secondary-dark mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 {totalScans > 0 ? ((normalScans / totalScans) * 100).toFixed(0) : 0}% negative rate
               </p>
             </div>
 
-            <div className="card p-4">
-              <span className="text-xs font-semibold text-primary uppercase tracking-wider block">
+            <div className="card p-4 border-blue-200/70 dark:border-blue-900/40">
+              <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
                 Mean Confidence
               </span>
-              <div className="text-2xl font-bold mt-1 text-text-primary dark:text-text-primary-dark">
+              <div className="text-2xl font-bold mt-1 text-slate-900 dark:text-white">
                 {avgConfidence}%
               </div>
-              <p className="text-[11px] text-text-secondary dark:text-text-secondary-dark mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Across both classes
               </p>
             </div>
@@ -232,40 +232,41 @@ const History = () => {
           {/* Confidence Trend Chart */}
           {chartData.length > 1 && (
             <div className="card">
-              <div className="flex items-center justify-between mb-4 pb-2 border-b border-border-color dark:border-border-color-dark">
+              <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-200/90 dark:border-white/[0.08]">
                 <div className="flex items-center gap-2">
-                  <TrendingUp size={16} className="text-primary" />
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-text-primary dark:text-text-primary-dark">
+                  <TrendingUp size={16} className="text-blue-500" />
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                     Recent Scan Confidence Trajectory
                   </h3>
                 </div>
-                <span className="text-xs text-text-secondary dark:text-text-secondary-dark">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   Last {chartData.length} records
                 </span>
               </div>
               <div className="h-48 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
-                    <YAxis domain={[50, 100]} stroke="#94a3b8" fontSize={11} />
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.12} />
+                    <XAxis dataKey="name" stroke="#64748b" fontSize={11} />
+                    <YAxis domain={[50, 100]} stroke="#64748b" fontSize={11} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0f172a',
-                        borderColor: '#334155',
-                        borderRadius: '8px',
+                        backgroundColor: '#0c0e14',
+                        borderColor: '#232838',
+                        borderRadius: '10px',
                         color: '#f8fafc',
-                        fontSize: '12px'
+                        fontSize: '12px',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
                       }}
                       formatter={(val) => [`${val}%`, 'Ensemble Confidence']}
                     />
                     <Line
                       type="monotone"
                       dataKey="confidence"
-                      stroke="#0284c7"
+                      stroke="#3b82f6"
                       strokeWidth={2.5}
-                      dot={{ r: 4, fill: '#0284c7' }}
-                      activeDot={{ r: 6 }}
+                      dot={{ r: 4, fill: '#3b82f6', stroke: '#1d4ed8' }}
+                      activeDot={{ r: 6, fill: '#60a5fa' }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -277,13 +278,13 @@ const History = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             {/* Search Input */}
             <div className="relative w-full sm:w-80">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by file name or Report ID..."
-                className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-border-color dark:border-border-color-dark bg-surface dark:bg-surface-elevatedDark text-text-primary dark:text-text-primary-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-white/[0.1] bg-surface dark:bg-surface-elevatedDark text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/25 focus:border-blue-500 transition-all shadow-subtle placeholder:text-slate-400"
               />
             </div>
 
@@ -300,8 +301,8 @@ const History = () => {
                   onClick={() => setFilterType(tab.id)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     filterType === tab.id
-                      ? 'bg-primary text-white font-semibold shadow-xs'
-                      : 'bg-surface dark:bg-surface-elevatedDark text-slate-600 dark:text-slate-300 border border-border-color dark:border-border-color-dark hover:bg-slate-50 dark:hover:bg-slate-800'
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold shadow-sm shadow-blue-500/20'
+                      : 'bg-surface dark:bg-surface-elevatedDark text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08] hover:bg-slate-50 dark:hover:bg-white/[0.04]'
                   }`}
                 >
                   {tab.label}
@@ -317,7 +318,7 @@ const History = () => {
               return (
                 <div
                   key={scan.id}
-                  className="card p-4 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-all group"
+                  className="card p-4 flex flex-col justify-between hover:border-slate-300 dark:hover:border-white/[0.16] transition-all group shadow-subtle hover:shadow-premium"
                 >
                   <div className="space-y-3">
                     {/* Header Row */}
@@ -333,14 +334,14 @@ const History = () => {
                     {/* Image Preview Thumbnail */}
                     <div 
                       onClick={() => setSelectedScan(scan)}
-                      className="relative h-36 bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center cursor-pointer group-hover:border-primary/50 transition-colors"
+                      className="relative h-36 bg-[#060709] rounded-xl overflow-hidden border border-slate-850 dark:border-white/[0.08] flex items-center justify-center cursor-pointer group-hover:border-blue-500/50 transition-colors"
                     >
                       <img
                         src={scan.previewUrl}
                         alt={scan.imageName}
                         className="max-h-full max-w-full object-contain"
                       />
-                      <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs gap-1">
+                      <div className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs gap-1">
                         <Eye size={14} />
                         <span>Inspect Scan</span>
                       </div>
@@ -348,10 +349,10 @@ const History = () => {
 
                     {/* Meta info */}
                     <div>
-                      <p className="font-medium text-xs text-text-primary dark:text-text-primary-dark truncate" title={scan.imageName}>
+                      <p className="font-semibold text-xs text-slate-900 dark:text-white truncate" title={scan.imageName}>
                         {scan.imageName}
                       </p>
-                      <p className="text-[11px] text-text-secondary dark:text-text-secondary-dark mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                         {new Date(scan.timestamp).toLocaleDateString()} at {new Date(scan.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
                     </div>
@@ -360,11 +361,11 @@ const History = () => {
                     <div>
                       <div className="flex items-center justify-between text-xs mb-1">
                         <span className="text-[11px] text-slate-500">Confidence</span>
-                        <span className="font-mono font-bold text-xs text-text-primary dark:text-text-primary-dark">
+                        <span className="font-mono font-bold text-xs text-slate-900 dark:text-white">
                           {scan.confidence}%
                         </span>
                       </div>
-                      <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-slate-100 dark:bg-white/[0.08] h-1.5 rounded-full overflow-hidden">
                         <div
                           className={`h-full ${isStone ? 'bg-danger' : 'bg-success'}`}
                           style={{ width: `${scan.confidence}%` }}
@@ -374,10 +375,10 @@ const History = () => {
                   </div>
 
                   {/* Actions Row */}
-                  <div className="pt-3 mt-3 border-t border-border-color dark:border-border-color-dark flex items-center justify-between">
+                  <div className="pt-3 mt-3 border-t border-slate-200/90 dark:border-white/[0.08] flex items-center justify-between">
                     <button
                       onClick={() => setSelectedScan(scan)}
-                      className="text-xs text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                      className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 cursor-pointer font-medium"
                     >
                       <Eye size={13} />
                       <span>Details</span>
@@ -385,7 +386,7 @@ const History = () => {
 
                     <button
                       onClick={() => deleteScan(scan.id)}
-                      className="p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      className="p-1 rounded-lg text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
                       title="Delete record"
                     >
                       <Trash2 size={14} />
@@ -397,7 +398,7 @@ const History = () => {
           </div>
 
           {filteredHistory.length === 0 && (
-            <div className="card py-12 text-center text-xs text-text-secondary dark:text-text-secondary-dark">
+            <div className="card py-12 text-center text-xs text-slate-500">
               No matching scans found for query "{searchQuery}".
             </div>
           )}
@@ -405,14 +406,14 @@ const History = () => {
       ) : (
         /* Empty State */
         <div className="card py-16 text-center space-y-4">
-          <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
-            <Calendar size={32} />
+          <div className="w-16 h-16 bg-slate-100 dark:bg-surface-elevatedDark rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-200/80 dark:border-white/[0.06]">
+            <Calendar size={30} />
           </div>
           <div className="max-w-sm mx-auto">
-            <h3 className="font-bold text-base text-text-primary dark:text-text-primary-dark">
+            <h3 className="font-bold text-base text-slate-900 dark:text-white">
               No Scan History Recorded
             </h3>
-            <p className="text-xs text-text-secondary dark:text-text-secondary-dark mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               Any scan you analyze in the Diagnostic Studio is automatically stored locally in your browser for chronological auditing.
             </p>
           </div>
@@ -425,7 +426,7 @@ const History = () => {
               onClick={seedSampleHistory}
               className="btn-secondary text-xs flex items-center gap-1.5"
             >
-              <Sparkles size={14} className="text-primary" />
+              <Sparkles size={14} className="text-blue-500" />
               <span>Load Sample History</span>
             </button>
           </div>
@@ -435,24 +436,24 @@ const History = () => {
       {/* Inspect Modal Dialog */}
       <AnimatePresence>
         {selectedScan && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in">
-            <div className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 relative">
-              <div className="flex items-center justify-between pb-3 border-b border-border-color dark:border-border-color-dark">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fade-in">
+            <div className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 relative border-slate-200 dark:border-white/[0.14] shadow-2xl">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200/90 dark:border-white/[0.08]">
                 <div>
-                  <span className="font-mono text-xs text-slate-500">{selectedScan.id}</span>
-                  <h3 className="text-base font-bold text-text-primary dark:text-text-primary-dark">
+                  <span className="font-mono text-xs text-slate-400">{selectedScan.id}</span>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
                     Scan Inspection Detail
                   </h3>
                 </div>
                 <button
                   onClick={() => setSelectedScan(null)}
-                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.08] text-slate-400 hover:text-slate-700 dark:hover:text-white"
                 >
                   <X size={18} />
                 </button>
               </div>
 
-              <div className="rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center max-h-80">
+              <div className="rounded-xl overflow-hidden bg-[#060709] border border-slate-800 flex items-center justify-center max-h-80">
                 <img
                   src={selectedScan.previewUrl}
                   alt={selectedScan.imageName}
@@ -461,49 +462,49 @@ const History = () => {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div className="p-2.5 bg-slate-50 dark:bg-slate-850 rounded-xl">
+                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
                   <span className="text-[10px] text-slate-400 uppercase font-semibold block">Verdict</span>
                   <span className={`font-bold mt-0.5 block ${selectedScan.prediction === 'Stone' ? 'text-danger' : 'text-success'}`}>
                     {selectedScan.prediction === 'Stone' ? 'Nephrolithiasis' : 'Negative'}
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-50 dark:bg-slate-850 rounded-xl">
+                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
                   <span className="text-[10px] text-slate-400 uppercase font-semibold block">Confidence</span>
-                  <span className="font-bold font-mono mt-0.5 block text-text-primary dark:text-text-primary-dark">
+                  <span className="font-bold font-mono mt-0.5 block text-slate-900 dark:text-white">
                     {selectedScan.confidence}%
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-50 dark:bg-slate-850 rounded-xl">
+                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
                   <span className="text-[10px] text-slate-400 uppercase font-semibold block">Checkpoint 1</span>
-                  <span className="font-bold font-mono mt-0.5 block text-text-primary dark:text-text-primary-dark">
+                  <span className="font-bold font-mono mt-0.5 block text-slate-900 dark:text-white">
                     {selectedScan.model1Prob || selectedScan.confidence}%
                   </span>
                 </div>
-                <div className="p-2.5 bg-slate-50 dark:bg-slate-850 rounded-xl">
+                <div className="p-2.5 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl border border-slate-200/80 dark:border-white/[0.06]">
                   <span className="text-[10px] text-slate-400 uppercase font-semibold block">Checkpoint 2</span>
-                  <span className="font-bold font-mono mt-0.5 block text-text-primary dark:text-text-primary-dark">
+                  <span className="font-bold font-mono mt-0.5 block text-slate-900 dark:text-white">
                     {selectedScan.model2Prob || selectedScan.confidence}%
                   </span>
                 </div>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-slate-850 rounded-xl text-xs space-y-1">
-                <div className="flex justify-between text-slate-500">
+              <div className="p-3 bg-slate-50 dark:bg-surface-elevatedDark rounded-xl text-xs space-y-1 border border-slate-200/80 dark:border-white/[0.06]">
+                <div className="flex justify-between text-slate-500 dark:text-slate-400">
                   <span>File Name:</span>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">{selectedScan.imageName}</span>
+                  <span className="font-medium text-slate-800 dark:text-slate-200">{selectedScan.imageName}</span>
                 </div>
-                <div className="flex justify-between text-slate-500">
+                <div className="flex justify-between text-slate-500 dark:text-slate-400">
                   <span>Timestamp:</span>
-                  <span className="font-medium text-slate-700 dark:text-slate-200">
+                  <span className="font-medium text-slate-800 dark:text-slate-200">
                     {new Date(selectedScan.timestamp).toLocaleString()}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-border-color dark:border-border-color-dark">
+              <div className="flex justify-end gap-2 pt-2 border-t border-slate-200/90 dark:border-white/[0.08]">
                 <button
                   onClick={() => deleteScan(selectedScan.id)}
-                  className="btn-secondary text-xs text-rose-600 dark:text-rose-400"
+                  className="btn-secondary text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                 >
                   Delete Record
                 </button>

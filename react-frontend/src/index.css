@@ -17,49 +17,51 @@
 }
 
 @layer components {
-  /* Modern Clinical Card */
+  /* Premium Glassmorphic Card */
   .card {
-    @apply bg-surface dark:bg-surface-dark rounded-2xl border border-border-color dark:border-border-color-dark p-6 transition-all duration-200 shadow-clinical;
+    @apply bg-surface dark:bg-surface-dark rounded-2xl border border-slate-200/90 dark:border-white/[0.08] p-6 transition-all duration-200 shadow-premium dark:shadow-premium-dark;
   }
   
   .card-hover {
-    @apply card hover:shadow-clinical-lg hover:border-slate-300 dark:hover:border-slate-700 hover:-translate-y-0.5;
+    @apply card hover:shadow-premium-lg hover:border-slate-300 dark:hover:border-white/[0.16] hover:-translate-y-0.5;
   }
 
-  /* Refined Primary Action Button */
+  /* Executive Primary Action Button (Indigo-Cobalt Gradient with Specular Highlight) */
   .btn-primary {
-    @apply bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-glow-primary active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none select-none text-sm;
+    @apply bg-gradient-to-r from-blue-600 via-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-md shadow-blue-600/20 hover:shadow-glow-primary active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none select-none text-sm border border-blue-400/30;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 4px 12px -2px rgba(37, 99, 235, 0.35);
   }
 
-  /* Clean Secondary Outlined Button */
+  /* Refined Secondary Surface Button */
   .btn-secondary {
-    @apply bg-surface dark:bg-surface-elevatedDark text-text-primary dark:text-text-primary-dark hover:bg-slate-100 dark:hover:bg-slate-800 border border-border-color dark:border-border-color-dark px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-[0.98] select-none text-sm;
+    @apply bg-surface dark:bg-surface-elevatedDark text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/[0.1] px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 active:scale-[0.98] select-none text-sm shadow-subtle hover:border-slate-300 dark:hover:border-white/[0.2];
   }
 
   /* Clinical Danger / Alert Button */
   .btn-danger {
-    @apply bg-danger hover:bg-danger-hover text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-sm hover:shadow-glow-danger active:scale-[0.98] select-none text-sm;
+    @apply bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white px-5 py-2.5 rounded-xl font-medium inline-flex items-center justify-center gap-2 cursor-pointer transition-all duration-200 shadow-md shadow-rose-600/20 hover:shadow-glow-danger active:scale-[0.98] select-none text-sm border border-rose-400/30;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 12px -2px rgba(244, 63, 94, 0.35);
   }
 
   /* Badge Styles */
   .badge {
-    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold tracking-wide uppercase select-none;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide select-none;
   }
 
   .badge-primary {
-    @apply badge bg-primary-subtle dark:bg-primary-darkSubtle text-primary dark:text-sky-300 border border-primary/20;
+    @apply badge bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60;
   }
 
   .badge-danger {
-    @apply badge bg-danger-subtle dark:bg-danger-darkSubtle text-danger dark:text-rose-300 border border-danger/30;
+    @apply badge bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60;
   }
 
   .badge-success {
-    @apply badge bg-success-subtle dark:bg-success-darkSubtle text-success dark:text-emerald-300 border border-success/30;
+    @apply badge bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60;
   }
 
   .badge-neutral {
-    @apply badge bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700;
+    @apply badge bg-slate-100 dark:bg-white/[0.06] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/[0.08];
   }
 
   /* Radiologic Inspection Viewport Filters */
@@ -82,17 +84,17 @@
 
 /* Subtle Modern Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600;
+  @apply bg-slate-300/80 dark:bg-white/[0.12] rounded-full hover:bg-slate-400 dark:hover:bg-white/[0.25];
 }
 
-/* Precision Circular Progress Gauge Drop Shadow */
+/* Precision Circular Progress Gauge Smooth Transition */
 svg circle.stroke-primary,
 svg circle.stroke-danger,
 svg circle.stroke-success {
